@@ -1,0 +1,65 @@
+<div class="drawer drawer-end z-50" *ngIf="isVisible()">
+  <input id="drawer-form" type="checkbox" class="drawer-toggle" checked />
+  <div class="drawer-content"></div>
+
+  <div class="drawer-side" [attr.key]="key">
+    <label for="drawer-form" class="drawer-overlay" (click)="close()"></label>
+    <div class="bg-base-100 w-[32rem] min-h-full p-6 space-y-6 shadow-xl rounded-l-2xl">
+      <div class="flex items-center">
+        <button class="btn btn-sm btn-circle btn-ghost" (click)="close()">✕</button>
+        <h3 class="text-2xl font-bold text-primary ml-4">{{ title }}</h3>
+
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <ng-container *ngFor="let field of fields; trackBy: trackByKey">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">{{ field.displayName }}</span>
+            </label>
+
+            <ng-container [ngSwitch]="field.entityType">
+              <input *ngSwitchCase="'String'"
+                     type="text"
+                     class="input input-bordered w-full"
+                     [formControlName]="field.name"
+                     [placeholder]="field.displayName" />
+
+              <textarea *ngSwitchCase="'Text'"
+                        rows="3"
+                        class="textarea textarea-bordered w-full"
+                        [formControlName]="field.name"
+                        [placeholder]="field.displayName"></textarea>
+
+              <input *ngSwitchCase="'Date'"
+                     type="datetime-local"
+                     class="input input-bordered w-full"
+                     [formControlName]="field.name" />
+
+              <label *ngSwitchCase="'Boolean'" class="label cursor-pointer gap-3">
+                <input type="checkbox" class="toggle toggle-primary m-4" [formControlName]="field.name" />
+              </label>
+
+              <input *ngSwitchDefault
+                     type="text"
+                     class="input input-bordered w-full"
+                     [formControlName]="field.name"
+                     [placeholder]="field.displayName" />
+
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <div class=" flex justify-between ">
+          <button type="button" class="btn btn-sm btn-outline " *ngIf="editMode" (click)="delete.emit(itemId)">
+            🗑️ Supprimer
+          </button>
+          <button type="submit" class="btn btn-sm btn-primary ">
+            {{ submitLabel }}
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

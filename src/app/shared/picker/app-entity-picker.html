@@ -1,0 +1,9 @@
+<label class="form-control w-full">
+  <span class="label-text">{{ label }}</span>
+  <select [ngModel]="value" (ngModelChange)="onValueChange($event)" class="select select-bordered w-full">
+    <option value="">{{ placeholder }}</option>
+    @for (entity of entities; track entity[idKey]) {
+      <option [value]="entity[idKey]">{{ entity[nameKey] }}</option>
+    }
+  </select>
+</label>

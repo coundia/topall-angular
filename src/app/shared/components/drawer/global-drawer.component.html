@@ -1,0 +1,75 @@
+<div class="drawer drawer-end z-50" *ngIf="visible()">
+  <input id="drawer-detail" type="checkbox" class="drawer-toggle" checked />
+  <div class="drawer-content"></div>
+
+  <div class="drawer-side">
+    <label for="drawer-detail" class="drawer-overlay" (click)="close()"></label>
+    <div class="bg-base-100 w-96 min-h-full p-6 space-y-6 shadow-xl rounded-l-2xl">
+      <div class="flex items-center">
+        <button class="btn btn-sm btn-circle btn-ghost" (click)="close()">✕</button>
+        <h3 class="text-2xl font-bold text-primary">{{ title }}</h3>
+      </div>
+
+      <ul class="text-sm grid grid-cols-2 gap-2">
+        <ng-container *ngFor="let field of fields; trackBy: trackByKey">
+          <span class="font-semibold">{{ field.displayName ? field.displayName : field.name | titlecase  }} :</span>
+          <ng-container [ngSwitch]="field.type">
+            <span *ngSwitchCase="'boolean'">
+              {{ item[field.name] ? 'Oui' : 'Non' }}
+            </span>
+            <span *ngSwitchCase="'badge'">
+              <span class="badge badge-sm"
+                    [ngClass]="item[field.name] === 'IN' ? 'badge-success' : 'badge-error'">
+                {{ item[field.name] === 'IN' ? 'Entrée' : 'Sortie' }}
+              </span>
+            </span>
+            <span *ngSwitchDefault>
+              {{ item[field.name] || '—' }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </ul>
+
+      <div *ngIf="item['details']">
+        <span class="font-semibold block mb-1">Détails :</span>
+        <p class="bg-base-200 p-3 rounded text-sm">{{ item['details'] || 'Aucun' }}</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="flex justify-between gap-2">
+
+        <div class="flex justify-between gap-2">
+          @if (viewLink) {
+            <a [routerLink]="viewLink" class="btn btn-sm btn-outline btn-primary flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15V3m0 0l-3.5 3.5M12 3l3.5 3.5"/>
+              </svg>
+              Plus de détails
+            </a>
+          }
+          @if (editLink) {
+            <a [routerLink]="editLink" class="btn btn-sm btn-outline btn-info flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2M5 13l4 4L19 7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9"/>
+              </svg>
+              Modifier
+            </a>
+          }
+          <button class="btn btn-sm btn-outline btn-error flex items-center gap-2" (click)="onDelete()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7H5m7 0v12m-7 0a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7"/>
+            </svg>
+            Supprimer
+          </button>
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>
