@@ -12,21 +12,35 @@
 
       <ul class="text-sm grid grid-cols-2 gap-2">
         <ng-container *ngFor="let field of fields; trackBy: trackByKey">
-          <span class="font-semibold">{{ field.displayName ? field.displayName : field.name | titlecase  }} :</span>
-          <ng-container [ngSwitch]="field.type">
-            <span *ngSwitchCase="'boolean'">
-              {{ item[field.name] ? 'Oui' : 'Non' }}
-            </span>
-            <span *ngSwitchCase="'badge'">
-              <span class="badge badge-sm"
-                    [ngClass]="item[field.name] === 'IN' ? 'badge-success' : 'badge-error'">
-                {{ item[field.name] === 'IN' ? 'Entrée' : 'Sortie' }}
-              </span>
-            </span>
-            <span *ngSwitchDefault>
-              {{ item[field.name] || '—' }}
-            </span>
-          </ng-container>
+
+          @if(field.name != 'id'){
+              <span class="font-semibold">{{ field.displayName ? field.displayName : field.name | titlecase  }} :</span>
+              <ng-container [ngSwitch]="field.type">
+                <span *ngSwitchCase="'boolean'">
+                  {{ item[field.name] ? 'Oui' : 'Non' }}
+                </span>
+                <span *ngSwitchCase="'badge'">
+                  <span class="badge badge-sm"
+                        [ngClass]="item[field.name] === 'IN' ? 'badge-success' : 'badge-error'">
+                    {{ item[field.name] === 'IN' ? 'Entrée' : 'Sortie' }}
+                  </span>
+                </span>
+                <span *ngSwitchDefault>
+                        @let relatedModel = item[field.name + 'Model'];
+                        @if (relatedModel) {
+                          <a
+                            class="badge badge-primary badge-sm cursor-pointer hover:underline"
+                            [routerLink]="['/', field.name, relatedModel.id, 'view']"
+                            [title]="'Voir le détail de ' + relatedModel.name"
+                            >
+                            {{ relatedModel.name }}
+                            </a>
+                        } @else {
+                          <span >  {{ item[field.name] ?? '—' }}</span>
+                        }
+                </span>
+              </ng-container>
+          }
         </ng-container>
       </ul>
 

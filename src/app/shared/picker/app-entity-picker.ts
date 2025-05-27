@@ -1,6 +1,9 @@
-import { Component, Input, forwardRef } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule, FormsModule} from '@angular/forms';
+import { Component, Input, forwardRef, OnInit } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+
+type Entity = Record<string, string | number>;
 
 @Component({
   selector: 'app-entity-picker',
@@ -11,24 +14,35 @@ import { CommonModule } from '@angular/common';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => EntityPickerComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
-export class EntityPickerComponent implements ControlValueAccessor {
+export class EntityPickerComponent implements ControlValueAccessor, OnInit {
   @Input() entities: any[] = [];
   @Input() label = '';
   @Input() placeholder = 'Sélectionner...';
   @Input() idKey = 'id';
   @Input() nameKey = 'name';
+  @Input() loadData?: () => Observable<Entity[]>;
 
-  value: string = '';
+  value = '';
+  disabled = false;
   onChange = (value: string) => {};
   onTouched = () => {};
 
-  writeValue(value: string): void {
-    this.value = value ?? '';
+  ngOnInit() {
+    if (this.loadData) {
+      this.loadData().subscribe((data: any) => {
+        this.entities = Array.isArray(data) ? data : data.content ?? [];
+      });
+    }
   }
+
+  writeValue(value: string | number): void {
+    this.value = value != null ? value.toString() : '';
+  }
+
 
   onValueChange(val: string) {
     this.value = val;
@@ -42,5 +56,7 @@ export class EntityPickerComponent implements ControlValueAccessor {
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
-  setDisabledState(isDisabled: boolean): void {}
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 }

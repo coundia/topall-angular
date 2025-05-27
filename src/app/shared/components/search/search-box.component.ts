@@ -31,8 +31,8 @@ export class SearchBoxComponent {
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-  get selectedType(): FieldType {
-    return this.fields.find(f => f.name === this.searchField)?.type ?? 'string';
+  get selectedType(): string {
+    return this.fields.find(f => f.name === this.searchField)?.inputType ?? 'string';
   }
 
   emitSearch() {

@@ -13,15 +13,16 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
+import { Account } from '../../account/models/account.model';
+import  { AccountService } from '../../account/services/account.service';
+import { Category } from '../../category/models/category.model';
+import  { CategoryService } from '../../category/services/category.service';
 
 @Component({
   selector: 'app-transaction-list',
@@ -63,12 +64,20 @@ export class TransactionListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+    private readonly  accountService = inject(AccountService);
+    account  =   signal<Account | null>(null);
+    accounts  =   signal<Account[]>([]);
+    private readonly  categoryService = inject(CategoryService);
+    category  =   signal<Category | null>(null);
+    categorys  =   signal<Category[]>([]);
+
   readonly selectedItem = signal<Transaction | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'hidden',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +85,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Montant',
     type: 'number',
     defaultValue: '0' ,
+    inputType: 'number',
     entityType: 'Double',
     relation: ''
     },
@@ -83,6 +93,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Motif',
     type: 'string',
     defaultValue: '&quot;Pas de motif&quot;' ,
+    inputType: 'text',
     entityType: 'String',
     relation: ''
     },
@@ -90,6 +101,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Description',
     type: 'string',
     defaultValue: '&quot;Pas de description&quot;' ,
+    inputType: 'text',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +109,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Activé',
     type: 'boolean',
     defaultValue: 'true' ,
+    inputType: 'checkbox',
     entityType: 'Boolean',
     relation: ''
     },
@@ -104,20 +117,23 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Compte',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'hidden',
     entityType: 'Account',
-    relation: ''
+    relation: 'manyToOne'
     },
     { name: 'category' ,
     displayName: 'Category',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'hidden',
     entityType: 'Category',
-    relation: ''
+    relation: 'manyToOne'
     },
     { name: 'typeTransactionRaw' ,
     displayName: 'Type',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'text',
     entityType: 'enum',
     relation: ''
     },
@@ -125,6 +141,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Date transaction',
     type: 'string',
     defaultValue: 'new Date().toISOString().substring(0, 10)' ,
+    inputType: 'datetime-local',
     entityType: 'Date',
     relation: ''
     },
@@ -132,6 +149,7 @@ export class TransactionListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -139,6 +157,7 @@ export class TransactionListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -149,48 +168,42 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Montant',
     type: 'number' ,
     entityType: 'Double' ,
+    inputType: 'number',
     relation: ''
     },
     { name: 'name',
     displayName: 'Motif',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'text',
     relation: ''
     },
     { name: 'details',
     displayName: 'Description',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'text',
     relation: ''
     },
     { name: 'isActive',
     displayName: 'Activé',
     type: 'boolean' ,
     entityType: 'Boolean' ,
-    relation: ''
-    },
-    { name: 'account',
-    displayName: 'Compte',
-    type: 'string' ,
-    entityType: 'Account' ,
-    relation: ''
-    },
-    { name: 'category',
-    displayName: 'Category',
-    type: 'string' ,
-    entityType: 'Category' ,
+    inputType: 'checkbox',
     relation: ''
     },
     { name: 'typeTransactionRaw',
     displayName: 'Type',
     type: 'string' ,
     entityType: 'enum' ,
+    inputType: 'text',
     relation: ''
     },
     { name: 'dateTransaction',
     displayName: 'Date transaction',
     type: 'string' ,
     entityType: 'Date' ,
+    inputType: 'datetime-local',
     relation: ''
     },
   ];
@@ -260,7 +273,37 @@ export class TransactionListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+     if (item.account) {
+        this.accountService.getById(item.account).subscribe({
+          next: account => {
+             item.accountModel = account;
+              this.selectedItem.set({
+              ...item,
+              accountModel: account
+            });
+          },
+          error: err => {
+            this.alert.show('Erreur lors de la récupération .', 'error');
+
+          }
+        });
+    }
+     if (item.category) {
+        this.categoryService.getById(item.category).subscribe({
+          next: category => {
+             item.categoryModel = category;
+              this.selectedItem.set({
+              ...item,
+              categoryModel: category
+            });
+          },
+          error: err => {
+            this.alert.show('Erreur lors de la récupération .', 'error');
+
+          }
+        });
+    }
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -313,7 +356,7 @@ export class TransactionListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('Transaction mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "Transaction" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -326,7 +369,7 @@ export class TransactionListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('Transaction créé(e) avec succès', 'success');
+          this.alert.show('Création "Transaction" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -360,6 +403,7 @@ export class TransactionListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -374,6 +418,7 @@ export class TransactionListComponent implements OnInit {
 
   openDrawerForEdit(item: Transaction) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -408,4 +453,16 @@ export class TransactionListComponent implements OnInit {
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
+
+    fetchDeps() {
+         this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+         this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
+    }
+
+    getEntities(name: string) {
+        if (name === 'account') return this.accounts();
+        if (name === 'category') return this.categorys();
+    return [];
+    }
+
 }

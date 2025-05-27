@@ -9,11 +9,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FieldDefinition } from '../models/field-definition';
+import {EntityPickerComponent} from '../../picker/app-entity-picker';
 
 @Component({
   selector: 'app-global-drawer-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EntityPickerComponent],
   templateUrl: './app-global-drawer-form.html',
 })
 export class GlobalDrawerFormComponent {
@@ -27,6 +28,8 @@ export class GlobalDrawerFormComponent {
   @Input() editMode = false;
   @Input() itemId?: string;
   @Input() key = 0;
+  @Input() getEntities!: (name: string) => any[];
+
 
   @Output() save = new EventEmitter<any>();
   @Output() delete = new EventEmitter<string>();
@@ -51,4 +54,5 @@ export class GlobalDrawerFormComponent {
   trackByKey(index: number, field: FieldDefinition): string {
     return field.name;
   }
+
 }

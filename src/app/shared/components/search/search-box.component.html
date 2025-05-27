@@ -14,19 +14,22 @@
     </select>
   </label>
 
-  @if (selectedType === 'boolean') {
-    <label class="form-control max-w-xs w-full">
-      <select
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchTermChange($event)"
-        class="select select-md select-bordered w-full"
-        aria-label="Valeur booléenne"
-      >
-        <option [value]="'true'">Oui</option>
-        <option [value]="'false'">Non</option>
-      </select>
+  @if (selectedType === 'boolean' || selectedType === 'checkbox') {
+    <label class="form-control max-w-xs w-full flex items-center gap-3">
+      <input
+        type="checkbox"
+        class="toggle toggle-primary"
+        [checked]="searchTerm === 'true'"
+        (change)="onSearchTermChange(($any($event.target).checked ? 'true' : 'false'))"
+        aria-label="Valeur "
+      />
+      <span>
+      {{ searchTerm === 'true' ? 'Oui' : 'Non' }}
+    </span>
     </label>
-  } @else if (selectedType === 'date') {
+  }
+
+  @else if (selectedType === 'date' || selectedType === 'datetime-local' || selectedType === 'time') {
     <label class="form-control max-w-xs w-full">
       <input
         type="date"

@@ -1,9 +1,19 @@
 <label class="form-control w-full">
-  <span class="label-text">{{ label }}</span>
-  <select [ngModel]="value" (ngModelChange)="onValueChange($event)" class="select select-bordered w-full">
+  @if (label) {
+    <span class="label-text mb-1">{{ label }}</span>
+  }
+  <select
+    class="select select-bordered w-full"
+    [ngModel]="value"
+    (ngModelChange)="onValueChange($event)"
+    [disabled]="disabled"
+  >
     <option value="">{{ placeholder }}</option>
     @for (entity of entities; track entity[idKey]) {
-      <option [value]="entity[idKey]">{{ entity[nameKey] }}</option>
+      <option [value]="entity[idKey] != null ? entity[idKey].toString() : ''">
+        {{ entity[nameKey] }}
+      </option>
     }
   </select>
+
 </label>

@@ -12,9 +12,6 @@
     Détail Transaction #{{ item()?.id ?? id }}
   </h2>
 
-    <div> account: {{ account()?.name}}</div>
-    <div> category: {{ category()?.name}}</div>
-
   @if (isLoading()) {
     <div class="flex justify-center p-8">
       <span class="loading loading-ring loading-lg"></span>
@@ -32,7 +29,20 @@
                 {{ getFieldValue(item()!, field.name) ? 'Oui' : 'Non' }}
               </span>
             } @else {
-              {{ getFieldValue(item()!, field.name) || '-' }}
+               @let relatedModel = getRelatedModel(item()!, field.name);
+               @if (relatedModel) {
+                    <a
+                      class="badge badge-primary badge-sm cursor-pointer hover:underline"
+                      [routerLink]="['/', field.name, relatedModel.id, 'view']"
+                      [title]="'Voir le détail de ' + relatedModel.name"
+                    >
+                    {{  relatedModel.name || '—' }}
+                    </a>
+                  } @else {
+                    <span class="badge badge-ghost badge-sm">
+                        {{  getFieldValue(item()!, field.name) || '—' }}
+                    </span>
+               }
             }
           </span>
         </div>

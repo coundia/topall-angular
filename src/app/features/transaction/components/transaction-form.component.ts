@@ -43,7 +43,7 @@ export class TransactionFormComponent implements OnInit {
     categorys  =   signal<Category[]>([]);
 
   readonly form = this.fb.group({
-    id: [ "" , Validators.required ],
+    id: [ ""  ],
     amount: [ 0 , Validators.required ],
     name: [ "Pas de motif" , Validators.required ],
     details: [ "Pas de description"  ],
@@ -61,66 +61,78 @@ export class TransactionFormComponent implements OnInit {
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'hidden',
       relation: ''
       },
     { name: 'amount',
     displayName: 'Montant',
      type: 'number',
       entityType: 'Double' ,
+      inputType: 'number',
       relation: ''
       },
     { name: 'name',
     displayName: 'Motif',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'text',
       relation: ''
       },
     { name: 'details',
     displayName: 'Description',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'text',
       relation: ''
       },
     { name: 'isActive',
     displayName: 'Activé',
      type: 'boolean',
       entityType: 'Boolean' ,
+      inputType: 'checkbox',
       relation: ''
       },
     { name: 'account',
     displayName: 'Compte',
      type: 'string',
       entityType: 'Account' ,
-      relation: ''
+      inputType: 'hidden',
+      relation: 'manyToOne'
       },
     { name: 'category',
     displayName: 'Category',
      type: 'string',
       entityType: 'Category' ,
-      relation: ''
+      inputType: 'hidden',
+      relation: 'manyToOne'
       },
-    { name: 'typeTransactionRaw',
-    displayName: 'Type',
-     type: 'string',
+    {
+      name: 'typeTransactionRaw',
+      displayName: 'Type',
+      type: 'string',
       entityType: 'enum' ,
+      inputType: 'text',
       relation: ''
       },
     { name: 'dateTransaction',
     displayName: 'Date transaction',
      type: 'string',
       entityType: 'Date' ,
+      inputType: 'datetime-local',
       relation: ''
       },
     { name: 'updatedAt',
     displayName: '',
      type: 'string',
       entityType: 'Date' ,
+      inputType: 'Date',
       relation: ''
       },
     { name: 'reference',
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
   ];
@@ -215,12 +227,15 @@ export class TransactionFormComponent implements OnInit {
       }
 
     fetchDeps() {
+         this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+         this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
+    }
 
-                 this.accountService.fetch(0,10).subscribe(data => this.accounts.set(data.content));
+    getEntities(name: string) {
+        if (name === 'account') return this.accounts();
+        if (name === 'category') return this.categorys();
+    return [];
+    }
 
-
-                 this.categoryService.fetch(0,10).subscribe(data => this.categorys.set(data.content));
-
-        }
 
 }

@@ -8,56 +8,62 @@
       <div class="flex items-center">
         <button class="btn btn-sm btn-circle btn-ghost" (click)="close()">✕</button>
         <h3 class="text-2xl font-bold text-primary ml-4">{{ title }}</h3>
-
       </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
-        <ng-container *ngFor="let field of fields; trackBy: trackByKey">
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">{{ field.displayName }}</span>
+        @for (field of fields; track field.name) {
+          @if(field.name !='id'){
+          <div>
+            <label class="label mb-1 ">
+              <span class="label-text">{{ field.displayName || field.name }}</span>
             </label>
-
-            <ng-container [ngSwitch]="field.entityType">
-              <input *ngSwitchCase="'String'"
-                     type="text"
-                     class="input input-bordered w-full"
-                     [formControlName]="field.name"
-                     [placeholder]="field.displayName" />
-
-              <textarea *ngSwitchCase="'Text'"
-                        rows="3"
-                        class="textarea textarea-bordered w-full"
-                        [formControlName]="field.name"
-                        [placeholder]="field.displayName"></textarea>
-
-              <input *ngSwitchCase="'Date'"
-                     type="datetime-local"
-                     class="input input-bordered w-full"
-                     [formControlName]="field.name" />
-
-              <label *ngSwitchCase="'Boolean'" class="label cursor-pointer gap-3">
-                <input type="checkbox" class="toggle toggle-primary m-4" [formControlName]="field.name" />
-              </label>
-
-              <input *ngSwitchDefault
-                     type="text"
-                     class="input input-bordered w-full"
-                     [formControlName]="field.name"
-                     [placeholder]="field.displayName" />
-
-            </ng-container>
+            @switch(field.entityType) {
+              @case('Date') {
+                <input
+                  type="datetime-local"
+                  class="input input-bordered w-full"
+                  [formControlName]="field.name"
+                  [placeholder]="field.displayName"
+                />
+              }
+              @case('Boolean') {
+                <label class="label cursor-pointer gap-3">
+                  <input type="checkbox" class="toggle toggle-primary m-4" [formControlName]="field.name" />
+                </label>
+              }
+              @default {
+                @if (field.relation === 'manyToOne') {
+                  <app-entity-picker
+                    [entities]="getEntities(field.name)"
+                    [label]="''"
+                    [placeholder]="'Choisir ' + (field.displayName || field.name)"
+                    idKey="id"
+                    nameKey="name"
+                    [formControlName]="field.name"
+                    class="mb-4"
+                  />
+                } @else {
+                  <input
+                    type="text"
+                    class="input input-bordered w-full"
+                    [formControlName]="field.name"
+                    [placeholder]="field.displayName"
+                  />
+                }
+              }
+            }
           </div>
-        </ng-container>
-
-        <div class=" flex justify-between ">
-          <button type="button" class="btn btn-sm btn-outline " *ngIf="editMode" (click)="delete.emit(itemId)">
-            🗑️ Supprimer
-          </button>
-          <button type="submit" class="btn btn-sm btn-primary ">
+        }
+        }
+        <div class="flex justify-between">
+          @if (editMode) {
+            <button type="button" class="btn btn-sm btn-outline" (click)="delete.emit(itemId)">
+              🗑️ Supprimer
+            </button>
+          }
+          <button type="submit" class="btn btn-sm btn-primary" [disabled]=form.invalid >
             {{ submitLabel }}
           </button>
-
         </div>
       </form>
     </div>
