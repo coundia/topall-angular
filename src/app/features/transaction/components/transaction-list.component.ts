@@ -141,7 +141,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Date transaction',
     type: 'string',
     defaultValue: 'new Date().toISOString().substring(0, 10)' ,
-    inputType: 'datetime-local',
+    inputType: 'date',
     entityType: 'Date',
     relation: ''
     },
@@ -203,7 +203,7 @@ export class TransactionListComponent implements OnInit {
     displayName: 'Date transaction',
     type: 'string' ,
     entityType: 'Date' ,
-    inputType: 'datetime-local',
+    inputType: 'date',
     relation: ''
     },
   ];
@@ -303,6 +303,7 @@ export class TransactionListComponent implements OnInit {
           }
         });
     }
+
 
   }
 
@@ -454,10 +455,12 @@ export class TransactionListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+
     fetchDeps() {
-         this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
-         this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
-    }
+             this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+             this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
+        }
+
 
     getEntities(name: string) {
         if (name === 'account') return this.accounts();

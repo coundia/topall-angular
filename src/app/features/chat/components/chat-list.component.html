@@ -93,6 +93,10 @@
   } @else {
     <app-empty-state message="{{ 'chat.none' | translate }}"/>
   }
+
+
+
+
 </div>
 
 <app-global-drawer
@@ -109,7 +113,7 @@
 <app-global-drawer-form
   *ngIf="drawerVisible"
   [title]="title"
-  [fields]="fieldsToDisplay"
+  [fields]="allFields"
   [form]="form"
   [submitLabel]="submitLabel"
   [editMode]="editMode"
@@ -120,4 +124,13 @@
   [editLink]="'/chat/' + itemId + '/edit'"
   [viewLink]="'/chat/' + itemId + '/view'"
   [addLink]="'/chat/new'"
+  [getEntities]="getEntities.bind(this)"
+/>
+
+
+<app-shared-chatbot
+  [messages]="messages"
+  (send)="handleSend($event)"
+  (clear)="handleClear()"
+
 />

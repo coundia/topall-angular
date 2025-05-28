@@ -1,3 +1,4 @@
+
 export type TypeAccount = 'TYPE1' | 'TYPE2';
 
 export interface Account {

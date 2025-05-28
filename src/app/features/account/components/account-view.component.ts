@@ -11,7 +11,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 @Component({
   selector: 'app-account-view',
   standalone: true,
-  imports: [CommonModule, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
   templateUrl: './account-view.component.html',
 })
 export class AccountViewComponent {
@@ -26,51 +26,46 @@ export class AccountViewComponent {
 
 
   readonly fields: FieldDefinition[] = [
-    { name: 'id',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'name',
-     displayName: 'Nom', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'details',
-     displayName: 'Description', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'currency',
-     displayName: 'Devise', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'currentBalance',
-     displayName: 'Solde de départ', type: 'number',
-    entityType: 'Double',
-    relation: ''
-     },
-    { name: 'previousBalance',
-     displayName: '', type: 'number',
-    entityType: 'Double',
-    relation: ''
-     },
-    { name: 'isActive',
-     displayName: 'Est active', type: 'boolean',
-    entityType: 'Boolean',
-    relation: ''
-     },
-    { name: 'updatedAt',
-     displayName: '', type: 'string',
-    entityType: 'Date',
-    relation: ''
-     },
-    { name: 'reference',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
+        { name: 'name',
+        displayName: 'Nom', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'details',
+        displayName: 'Description', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'currency',
+        displayName: 'Devise', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'currentBalance',
+        displayName: 'Solde de départ', type: 'number',
+        entityType: 'Double',
+        relation: ''
+        },
+        { name: 'previousBalance',
+        displayName: '', type: 'number',
+        entityType: 'Double',
+        relation: ''
+        },
+        { name: 'isActive',
+        displayName: 'Est active', type: 'boolean',
+        entityType: 'Boolean',
+        relation: ''
+        },
+        { name: 'updatedAt',
+        displayName: '', type: 'string',
+        entityType: 'Date',
+        relation: ''
+        },
+        { name: 'reference',
+        displayName: '', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
   ];
 
   constructor() {
@@ -116,5 +111,9 @@ export class AccountViewComponent {
     });
   }
 
+
+   getRelatedModel(item: any, fieldName: string) {
+     return (item as any)[fieldName + 'Model'];
+  }
 
 }

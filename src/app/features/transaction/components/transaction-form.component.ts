@@ -8,7 +8,9 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
+
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
+
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
@@ -21,7 +23,7 @@ import  { CategoryService } from '../../category/services/category.service';
   standalone: true,
   imports: [CommonModule,
    ReactiveFormsModule,
-EntityPickerComponent,
+    EntityPickerComponent,
     EntityToolbarActionComponent
     ],
   templateUrl: './transaction-form.component.html',
@@ -106,10 +108,9 @@ export class TransactionFormComponent implements OnInit {
       inputType: 'hidden',
       relation: 'manyToOne'
       },
-    {
-      name: 'typeTransactionRaw',
-      displayName: 'Type',
-      type: 'string',
+    { name: 'typeTransactionRaw',
+    displayName: 'Type',
+     type: 'string',
       entityType: 'enum' ,
       inputType: 'text',
       relation: ''
@@ -118,7 +119,7 @@ export class TransactionFormComponent implements OnInit {
     displayName: 'Date transaction',
      type: 'string',
       entityType: 'Date' ,
-      inputType: 'datetime-local',
+      inputType: 'date',
       relation: ''
       },
     { name: 'updatedAt',

@@ -13,15 +13,16 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
+import { Account } from '../../account/models/account.model';
+import  { AccountService } from '../../account/services/account.service';
+import {ChatbotComponent} from '../../../shared/chatbot/chatbot.component';
+import {ChatMessage} from '../../../shared/chatbot/chat-message.model';
 
 @Component({
   selector: 'app-chat-list',
@@ -42,7 +43,8 @@ import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Pars
     GlobalDrawerFormComponent,
     GlobalDrawerComponent,
     NgIf,
-    SortHeaderComponent
+    SortHeaderComponent,
+    ChatbotComponent
   ],
   templateUrl: './chat-list.component.html',
 })
@@ -63,12 +65,17 @@ export class ChatListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+    private readonly  accountService = inject(AccountService);
+    account  =   signal<Account | null>(null);
+    accounts  =   signal<Account[]>([]);
+
   readonly selectedItem = signal<Chat | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +83,7 @@ export class ChatListComponent implements OnInit {
     displayName: 'Message',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -83,6 +91,7 @@ export class ChatListComponent implements OnInit {
     displayName: 'Réponses',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -90,6 +99,7 @@ export class ChatListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +107,7 @@ export class ChatListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -104,13 +115,15 @@ export class ChatListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'Account',
-    relation: ''
+    relation: 'manyToOne'
     },
     { name: 'updatedAt' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -118,6 +131,7 @@ export class ChatListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -128,12 +142,14 @@ export class ChatListComponent implements OnInit {
     displayName: 'Message',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'responses',
     displayName: 'Réponses',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
   ];
@@ -203,7 +219,23 @@ export class ChatListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+     if (item.account) {
+        this.accountService.getById(item.account).subscribe({
+          next: account => {
+             item.accountModel = account;
+              this.selectedItem.set({
+              ...item,
+              accountModel: account
+            });
+          },
+          error: err => {
+            this.alert.show('Erreur lors de la récupération .', 'error');
+
+          }
+        });
+    }
+
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -255,7 +287,7 @@ export class ChatListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('Chat mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "Chat" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -268,7 +300,7 @@ export class ChatListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('Chat créé(e) avec succès', 'success');
+          this.alert.show('Création "Chat" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -302,6 +334,7 @@ export class ChatListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -316,6 +349,7 @@ export class ChatListComponent implements OnInit {
 
   openDrawerForEdit(item: Chat) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -347,7 +381,64 @@ export class ChatListComponent implements OnInit {
     });
   });
 
+
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
+  }
+
+
+    fetchDeps() {
+             this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+        }
+
+
+    getEntities(name: string) {
+        if (name === 'account') return this.accounts();
+    return [];
+    }
+
+  chatMessages: ChatMessage[] = [
+    {
+      id: '1',
+      user: 'bot',
+      content: 'Hello! How can I help you?',
+      createdAt: new Date(),
+    }
+  ];
+
+  messages = () => this.chatMessages;
+
+  handleSend(event: { message: string, files: File[] }) {
+    this.chatMessages = [
+      ...this.chatMessages,
+      {
+        id: crypto.randomUUID(),
+        user: 'me',
+        content: event.message,
+        createdAt: new Date(),
+        files: event.files,
+      }
+    ];
+    // Optionally simulate bot response:
+    setTimeout(() => {
+      this.chatMessages = [
+        ...this.chatMessages,
+        {
+          id: crypto.randomUUID(),
+          user: 'bot',
+          content: 'I received your message!',
+          createdAt: new Date(),
+        }
+      ];
+    }, 800);
+  }
+
+  handleClear() {
+    this.chatMessages = [];
+  }
+
+  handleOCR(file: File) {
+    // Envoie à ton service OCR IA ici
+    // Ex: this.ocrService.extractText(file).subscribe(...)
   }
 }

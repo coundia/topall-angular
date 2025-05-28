@@ -9,6 +9,9 @@ import { FieldDefinition } from '../../../shared/components/models/field-definit
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 
+import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
+
+
 
 
 @Component({
@@ -16,6 +19,7 @@ import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
   standalone: true,
   imports: [CommonModule,
    ReactiveFormsModule,
+    EntityPickerComponent,
     EntityToolbarActionComponent
     ],
   templateUrl: './setting-form.component.html',
@@ -33,7 +37,7 @@ export class SettingFormComponent implements OnInit {
 
 
   readonly form = this.fb.group({
-    id: [ "" , Validators.required ],
+    id: [ ""  ],
     name: [ "" , Validators.required ],
     value: [ "" , Validators.required ],
     locale: [ "" , Validators.required ],
@@ -48,48 +52,56 @@ export class SettingFormComponent implements OnInit {
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'name',
     displayName: 'Clé',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'value',
     displayName: 'Valeur',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'locale',
     displayName: 'Langue',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'details',
     displayName: 'Description',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'isActive',
     displayName: '',
      type: 'boolean',
       entityType: 'Boolean' ,
+      inputType: 'Boolean',
       relation: ''
       },
     { name: 'updatedAt',
     displayName: '',
      type: 'string',
       entityType: 'Date' ,
+      inputType: 'Date',
       relation: ''
       },
     { name: 'reference',
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
   ];
@@ -174,5 +186,11 @@ export class SettingFormComponent implements OnInit {
    onDelete() {
         //todo
       }
+
+
+    getEntities(name: string) {
+    return [];
+    }
+
 
 }

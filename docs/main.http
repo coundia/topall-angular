@@ -296,7 +296,7 @@ Content-Type: application/json
   "outputDir": "/Users/pcoundia/labs/angular/angular19/src/app/features",
   "definition": {
 	"name": "Chat",
-	"table": "chat",
+	"table": "chatbot",
 	"title": "Chat",
 	"header": "account",
 	"hasSummary": false,

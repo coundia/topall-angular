@@ -11,7 +11,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 @Component({
   selector: 'app-setting-view',
   standalone: true,
-  imports: [CommonModule, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
   templateUrl: './setting-view.component.html',
 })
 export class SettingViewComponent {
@@ -26,46 +26,41 @@ export class SettingViewComponent {
 
 
   readonly fields: FieldDefinition[] = [
-    { name: 'id',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'name',
-     displayName: 'Clé', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'value',
-     displayName: 'Valeur', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'locale',
-     displayName: 'Langue', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'details',
-     displayName: 'Description', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'isActive',
-     displayName: '', type: 'boolean',
-    entityType: 'Boolean',
-    relation: ''
-     },
-    { name: 'updatedAt',
-     displayName: '', type: 'string',
-    entityType: 'Date',
-    relation: ''
-     },
-    { name: 'reference',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
+        { name: 'name',
+        displayName: 'Clé', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'value',
+        displayName: 'Valeur', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'locale',
+        displayName: 'Langue', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'details',
+        displayName: 'Description', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'isActive',
+        displayName: '', type: 'boolean',
+        entityType: 'Boolean',
+        relation: ''
+        },
+        { name: 'updatedAt',
+        displayName: '', type: 'string',
+        entityType: 'Date',
+        relation: ''
+        },
+        { name: 'reference',
+        displayName: '', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
   ];
 
   constructor() {
@@ -111,5 +106,9 @@ export class SettingViewComponent {
     });
   }
 
+
+   getRelatedModel(item: any, fieldName: string) {
+     return (item as any)[fieldName + 'Model'];
+  }
 
 }

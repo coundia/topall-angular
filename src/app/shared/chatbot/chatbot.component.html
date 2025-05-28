@@ -1,0 +1,33 @@
+<div class="flex flex-col h-screen max-w-2xl mx-auto bg-base-100 rounded-2xl shadow-xl overflow-hidden w-full">
+  <div class="flex items-center justify-between p-4 border-b border-base-200 bg-base-100">
+    <div class="flex items-center gap-3">
+      <div class="avatar">
+        <div class="w-10 rounded-full bg-primary">
+          <svg class="w-10 h-10 text-base-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 20h9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="7" r="4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <span class="font-bold text-lg text-primary">ChatBot</span>
+    </div>
+    <button class="btn btn-square btn-ghost" (click)="handleClear()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <!-- Messages, occupe tout l'espace restant -->
+  <div class="flex-1 overflow-y-auto">
+    <app-chat-message-list [messages]="messages"></app-chat-message-list>
+  </div>
+  <!-- Input fixé en bas -->
+  <div class="sticky bottom-0 left-0 right-0 z-10 bg-base-100">
+    <chat-input
+      (send)="handleSend($event)"
+      (record)="handleSpeech($event)"
+      (camera)="handleCamera($event)"
+      (ocr)="handleOCR($event)"
+    ></chat-input>
+  </div>
+</div>

@@ -8,7 +8,9 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
+
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
+
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
@@ -19,7 +21,7 @@ import  { AccountService } from '../../account/services/account.service';
   standalone: true,
   imports: [CommonModule,
    ReactiveFormsModule,
-EntityPickerComponent,
+    EntityPickerComponent,
     EntityToolbarActionComponent
     ],
   templateUrl: './accountUser-form.component.html',
@@ -39,7 +41,7 @@ export class AccountUserFormComponent implements OnInit {
     accounts  =   signal<Account[]>([]);
 
   readonly form = this.fb.group({
-    id: [ "" , Validators.required ],
+    id: [ ""  ],
     name: [ "" , Validators.required ],
     account: [ ""  ],
     username: [ "" , Validators.required ],
@@ -54,48 +56,56 @@ export class AccountUserFormComponent implements OnInit {
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'name',
     displayName: 'Message',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'account',
     displayName: 'Compte',
      type: 'string',
       entityType: 'Account' ,
-      relation: ''
+      inputType: 'String',
+      relation: 'manyToOne'
       },
     { name: 'username',
     displayName: 'Partager avec (Nom identifiant)',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'details',
     displayName: 'Description',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'isActive',
     displayName: '',
      type: 'boolean',
       entityType: 'Boolean' ,
+      inputType: 'Boolean',
       relation: ''
       },
     { name: 'updatedAt',
     displayName: '',
      type: 'string',
       entityType: 'Date' ,
+      inputType: 'Date',
       relation: ''
       },
     { name: 'reference',
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
   ];
@@ -183,9 +193,13 @@ export class AccountUserFormComponent implements OnInit {
       }
 
     fetchDeps() {
+         this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+    }
 
-                 this.accountService.fetch(0,10).subscribe(data => this.accounts.set(data.content));
+    getEntities(name: string) {
+        if (name === 'account') return this.accounts();
+    return [];
+    }
 
-        }
 
 }

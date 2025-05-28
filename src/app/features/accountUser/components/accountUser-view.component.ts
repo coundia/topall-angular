@@ -13,7 +13,7 @@ import  { AccountService } from '../../account/services/account.service';
 @Component({
   selector: 'app-accountUser-view',
   standalone: true,
-  imports: [CommonModule, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
   templateUrl: './accountUser-view.component.html',
 })
 export class AccountUserViewComponent {
@@ -26,50 +26,45 @@ export class AccountUserViewComponent {
   readonly item = signal<AccountUser | null>(this.service.accountUsers().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
 
-private readonly  accountService = inject(AccountService);
-  account  =   signal<Account | null>(null);
+    private readonly  accountService = inject(AccountService);
+    account  =   signal<Account | null>(null);
 
   readonly fields: FieldDefinition[] = [
-    { name: 'id',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'name',
-     displayName: 'Message', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'account',
-     displayName: 'Compte', type: 'string',
-    entityType: 'Account',
-    relation: ''
-     },
-    { name: 'username',
-     displayName: 'Partager avec (Nom identifiant)', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'details',
-     displayName: 'Description', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'isActive',
-     displayName: '', type: 'boolean',
-    entityType: 'Boolean',
-    relation: ''
-     },
-    { name: 'updatedAt',
-     displayName: '', type: 'string',
-    entityType: 'Date',
-    relation: ''
-     },
-    { name: 'reference',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
+        { name: 'name',
+        displayName: 'Message', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'account',
+        displayName: 'Compte', type: 'string',
+        entityType: 'Account',
+        relation: 'manyToOne'
+        },
+        { name: 'username',
+        displayName: 'Partager avec (Nom identifiant)', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'details',
+        displayName: 'Description', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'isActive',
+        displayName: '', type: 'boolean',
+        entityType: 'Boolean',
+        relation: ''
+        },
+        { name: 'updatedAt',
+        displayName: '', type: 'string',
+        entityType: 'Date',
+        relation: ''
+        },
+        { name: 'reference',
+        displayName: '', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
   ];
 
   constructor() {
@@ -87,10 +82,16 @@ private readonly  accountService = inject(AccountService);
           }
         });
       }
-        if (this.item()) {
+        if (this.item() && !this.item()!.accountModel) {
             this.accountService.getById(this.item()!.account!).subscribe({
               next: account => {
                 this.account.set(account);
+
+                this.item.set({
+                  ...this.item()!,
+                  accountModel: account
+                })
+
               },
               error: _ => {
                 this.alert.show('Erreur lors de la récupération account', 'error');
@@ -125,5 +126,9 @@ private readonly  accountService = inject(AccountService);
     });
   }
 
+
+   getRelatedModel(item: any, fieldName: string) {
+     return (item as any)[fieldName + 'Model'];
+  }
 
 }

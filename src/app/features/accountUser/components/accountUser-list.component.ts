@@ -13,15 +13,14 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
+import { Account } from '../../account/models/account.model';
+import  { AccountService } from '../../account/services/account.service';
 
 @Component({
   selector: 'app-accountUser-list',
@@ -63,12 +62,17 @@ export class AccountUserListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+    private readonly  accountService = inject(AccountService);
+    account  =   signal<Account | null>(null);
+    accounts  =   signal<Account[]>([]);
+
   readonly selectedItem = signal<AccountUser | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +80,7 @@ export class AccountUserListComponent implements OnInit {
     displayName: 'Message',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -83,13 +88,15 @@ export class AccountUserListComponent implements OnInit {
     displayName: 'Compte',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'Account',
-    relation: ''
+    relation: 'manyToOne'
     },
     { name: 'username' ,
     displayName: 'Partager avec (Nom identifiant)',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +104,7 @@ export class AccountUserListComponent implements OnInit {
     displayName: 'Description',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -104,6 +112,7 @@ export class AccountUserListComponent implements OnInit {
     displayName: '',
     type: 'boolean',
     defaultValue: 'true' ,
+    inputType: 'Boolean',
     entityType: 'Boolean',
     relation: ''
     },
@@ -111,6 +120,7 @@ export class AccountUserListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -118,6 +128,7 @@ export class AccountUserListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -128,24 +139,21 @@ export class AccountUserListComponent implements OnInit {
     displayName: 'Message',
     type: 'string' ,
     entityType: 'String' ,
-    relation: ''
-    },
-    { name: 'account',
-    displayName: 'Compte',
-    type: 'string' ,
-    entityType: 'Account' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'username',
     displayName: 'Partager avec (Nom identifiant)',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'details',
     displayName: 'Description',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
   ];
@@ -215,7 +223,23 @@ export class AccountUserListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+     if (item.account) {
+        this.accountService.getById(item.account).subscribe({
+          next: account => {
+             item.accountModel = account;
+              this.selectedItem.set({
+              ...item,
+              accountModel: account
+            });
+          },
+          error: err => {
+            this.alert.show('Erreur lors de la récupération .', 'error');
+
+          }
+        });
+    }
+
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -267,7 +291,7 @@ export class AccountUserListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('AccountUser mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "AccountUser" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -280,7 +304,7 @@ export class AccountUserListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('AccountUser créé(e) avec succès', 'success');
+          this.alert.show('Création "AccountUser" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -314,6 +338,7 @@ export class AccountUserListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -328,6 +353,7 @@ export class AccountUserListComponent implements OnInit {
 
   openDrawerForEdit(item: AccountUser) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -362,4 +388,16 @@ export class AccountUserListComponent implements OnInit {
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
+
+
+    fetchDeps() {
+             this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+        }
+
+
+    getEntities(name: string) {
+        if (name === 'account') return this.accounts();
+    return [];
+    }
+
 }

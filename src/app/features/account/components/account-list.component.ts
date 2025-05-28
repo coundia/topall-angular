@@ -13,15 +13,12 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 
 @Component({
   selector: 'app-account-list',
@@ -63,12 +60,14 @@ export class AccountListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+
   readonly selectedItem = signal<Account | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +75,7 @@ export class AccountListComponent implements OnInit {
     displayName: 'Nom',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -83,6 +83,7 @@ export class AccountListComponent implements OnInit {
     displayName: 'Description',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -90,6 +91,7 @@ export class AccountListComponent implements OnInit {
     displayName: 'Devise',
     type: 'string',
     defaultValue: '&quot;XOF&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +99,7 @@ export class AccountListComponent implements OnInit {
     displayName: 'Solde de départ',
     type: 'number',
     defaultValue: '0.0' ,
+    inputType: 'Double',
     entityType: 'Double',
     relation: ''
     },
@@ -104,6 +107,7 @@ export class AccountListComponent implements OnInit {
     displayName: '',
     type: 'number',
     defaultValue: '0.0' ,
+    inputType: 'Double',
     entityType: 'Double',
     relation: ''
     },
@@ -111,6 +115,7 @@ export class AccountListComponent implements OnInit {
     displayName: 'Est active',
     type: 'boolean',
     defaultValue: 'true' ,
+    inputType: 'Boolean',
     entityType: 'Boolean',
     relation: ''
     },
@@ -118,6 +123,7 @@ export class AccountListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -125,6 +131,7 @@ export class AccountListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -135,30 +142,35 @@ export class AccountListComponent implements OnInit {
     displayName: 'Nom',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'details',
     displayName: 'Description',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'currency',
     displayName: 'Devise',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'currentBalance',
     displayName: 'Solde de départ',
     type: 'number' ,
     entityType: 'Double' ,
+    inputType: 'Double',
     relation: ''
     },
     { name: 'isActive',
     displayName: 'Est active',
     type: 'boolean' ,
     entityType: 'Boolean' ,
+    inputType: 'Boolean',
     relation: ''
     },
   ];
@@ -228,7 +240,9 @@ export class AccountListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+
+     setTimeout(() => this.selectedItem.set(item), 0);
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -280,7 +294,7 @@ export class AccountListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('Account mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "Account" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -293,7 +307,7 @@ export class AccountListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('Account créé(e) avec succès', 'success');
+          this.alert.show('Création "Account" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -327,6 +341,7 @@ export class AccountListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -341,6 +356,7 @@ export class AccountListComponent implements OnInit {
 
   openDrawerForEdit(item: Account) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -375,4 +391,14 @@ export class AccountListComponent implements OnInit {
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
+
+
+    fetchDeps() {
+        }
+
+
+    getEntities(name: string) {
+    return [];
+    }
+
 }

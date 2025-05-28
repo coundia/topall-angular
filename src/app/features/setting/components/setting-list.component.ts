@@ -13,15 +13,12 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 
 @Component({
   selector: 'app-setting-list',
@@ -63,12 +60,14 @@ export class SettingListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+
   readonly selectedItem = signal<Setting | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +75,7 @@ export class SettingListComponent implements OnInit {
     displayName: 'Clé',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -83,6 +83,7 @@ export class SettingListComponent implements OnInit {
     displayName: 'Valeur',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -90,6 +91,7 @@ export class SettingListComponent implements OnInit {
     displayName: 'Langue',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +99,7 @@ export class SettingListComponent implements OnInit {
     displayName: 'Description',
     type: 'string',
     defaultValue: '&quot;NA&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -104,6 +107,7 @@ export class SettingListComponent implements OnInit {
     displayName: '',
     type: 'boolean',
     defaultValue: 'true' ,
+    inputType: 'Boolean',
     entityType: 'Boolean',
     relation: ''
     },
@@ -111,6 +115,7 @@ export class SettingListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -118,6 +123,7 @@ export class SettingListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -128,24 +134,28 @@ export class SettingListComponent implements OnInit {
     displayName: 'Clé',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'value',
     displayName: 'Valeur',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'locale',
     displayName: 'Langue',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'details',
     displayName: 'Description',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
   ];
@@ -215,7 +225,9 @@ export class SettingListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+
+     setTimeout(() => this.selectedItem.set(item), 0);
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -267,7 +279,7 @@ export class SettingListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('Setting mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "Setting" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -280,7 +292,7 @@ export class SettingListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('Setting créé(e) avec succès', 'success');
+          this.alert.show('Création "Setting" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -314,6 +326,7 @@ export class SettingListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -328,6 +341,7 @@ export class SettingListComponent implements OnInit {
 
   openDrawerForEdit(item: Setting) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -362,4 +376,14 @@ export class SettingListComponent implements OnInit {
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
+
+
+    fetchDeps() {
+        }
+
+
+    getEntities(name: string) {
+    return [];
+    }
+
 }

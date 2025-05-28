@@ -11,7 +11,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 @Component({
   selector: 'app-category-view',
   standalone: true,
-  imports: [CommonModule, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
   templateUrl: './category-view.component.html',
 })
 export class CategoryViewComponent {
@@ -26,41 +26,36 @@ export class CategoryViewComponent {
 
 
   readonly fields: FieldDefinition[] = [
-    { name: 'id',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'name',
-     displayName: 'Nom', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'typeCategoryRaw',
-     displayName: '', type: 'string',
-    entityType: 'enum',
-    relation: ''
-     },
-    { name: 'details',
-     displayName: 'Description', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
-    { name: 'isActive',
-     displayName: '', type: 'boolean',
-    entityType: 'Boolean',
-    relation: ''
-     },
-    { name: 'updatedAt',
-     displayName: '', type: 'string',
-    entityType: 'Date',
-    relation: ''
-     },
-    { name: 'reference',
-     displayName: '', type: 'string',
-    entityType: 'String',
-    relation: ''
-     },
+        { name: 'name',
+        displayName: 'Nom', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'typeCategoryRaw',
+        displayName: '', type: 'string',
+        entityType: 'enum',
+        relation: ''
+        },
+        { name: 'details',
+        displayName: 'Description', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
+        { name: 'isActive',
+        displayName: '', type: 'boolean',
+        entityType: 'Boolean',
+        relation: ''
+        },
+        { name: 'updatedAt',
+        displayName: '', type: 'string',
+        entityType: 'Date',
+        relation: ''
+        },
+        { name: 'reference',
+        displayName: '', type: 'string',
+        entityType: 'String',
+        relation: ''
+        },
   ];
 
   constructor() {
@@ -106,5 +101,9 @@ export class CategoryViewComponent {
     });
   }
 
+
+   getRelatedModel(item: any, fieldName: string) {
+     return (item as any)[fieldName + 'Model'];
+  }
 
 }

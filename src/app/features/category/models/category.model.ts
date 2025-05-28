@@ -1,3 +1,4 @@
+
 export type TypeCategory = 'TYPE1' | 'TYPE2';
 
 export interface Category {

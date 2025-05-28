@@ -6,7 +6,7 @@ const TRANSLATION_FILES = [
    'account',
   'transaction',
   'accountUser',
-  'chat',
+  // 'chatbot',
   'category',
   'setting',
   //core

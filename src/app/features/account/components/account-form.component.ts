@@ -9,6 +9,9 @@ import { FieldDefinition } from '../../../shared/components/models/field-definit
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 
+import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
+
+
 
 
 @Component({
@@ -16,6 +19,7 @@ import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
   standalone: true,
   imports: [CommonModule,
    ReactiveFormsModule,
+    EntityPickerComponent,
     EntityToolbarActionComponent
     ],
   templateUrl: './account-form.component.html',
@@ -33,7 +37,7 @@ export class AccountFormComponent implements OnInit {
 
 
   readonly form = this.fb.group({
-    id: [ "" , Validators.required ],
+    id: [ ""  ],
     name: [ "" , Validators.required ],
     details: [ ""  ],
     currency: [ "XOF" , Validators.required ],
@@ -49,54 +53,63 @@ export class AccountFormComponent implements OnInit {
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'name',
     displayName: 'Nom',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'details',
     displayName: 'Description',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'currency',
     displayName: 'Devise',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
     { name: 'currentBalance',
     displayName: 'Solde de départ',
      type: 'number',
       entityType: 'Double' ,
+      inputType: 'Double',
       relation: ''
       },
     { name: 'previousBalance',
     displayName: '',
      type: 'number',
       entityType: 'Double' ,
+      inputType: 'Double',
       relation: ''
       },
     { name: 'isActive',
     displayName: 'Est active',
      type: 'boolean',
       entityType: 'Boolean' ,
+      inputType: 'Boolean',
       relation: ''
       },
     { name: 'updatedAt',
     displayName: '',
      type: 'string',
       entityType: 'Date' ,
+      inputType: 'Date',
       relation: ''
       },
     { name: 'reference',
     displayName: '',
      type: 'string',
       entityType: 'String' ,
+      inputType: 'String',
       relation: ''
       },
   ];
@@ -183,5 +196,11 @@ export class AccountFormComponent implements OnInit {
    onDelete() {
         //todo
       }
+
+
+    getEntities(name: string) {
+    return [];
+    }
+
 
 }

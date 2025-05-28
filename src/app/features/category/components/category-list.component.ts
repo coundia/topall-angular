@@ -13,15 +13,12 @@ import { EmptyStateComponent } from '../../../shared/components/empty/empty-stat
 import { PaginationControlsComponent } from '../../../shared/components/pagination/pagination-controls.component';
 import { PaginationJoinComponent } from '../../../shared/components/pagination/pagination-join.component';
 import { GlobalDrawerComponent } from '../../../shared/components/drawer/global-drawer.component';
-import {FieldDefinition} from '../../../shared/components/models/field-definition';
+import {FieldDefinition, isValidUUID} from '../../../shared/components/models/field-definition';
 import {GlobalDrawerFormComponent} from '../../../shared/components/drawer/app-global-drawer-form';
-
 import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.component';
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
-
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 
 @Component({
   selector: 'app-category-list',
@@ -63,12 +60,14 @@ export class CategoryListComponent implements OnInit {
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
 
+
   readonly selectedItem = signal<Category | null>(null);
   readonly allFields: FieldDefinition[] = [
     { name: 'id' ,
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -76,6 +75,7 @@ export class CategoryListComponent implements OnInit {
     displayName: 'Nom',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -83,6 +83,7 @@ export class CategoryListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'enum',
     relation: ''
     },
@@ -90,6 +91,7 @@ export class CategoryListComponent implements OnInit {
     displayName: 'Description',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -97,6 +99,7 @@ export class CategoryListComponent implements OnInit {
     displayName: '',
     type: 'boolean',
     defaultValue: 'true' ,
+    inputType: 'Boolean',
     entityType: 'Boolean',
     relation: ''
     },
@@ -104,6 +107,7 @@ export class CategoryListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'Date',
     entityType: 'Date',
     relation: ''
     },
@@ -111,6 +115,7 @@ export class CategoryListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
+    inputType: 'String',
     entityType: 'String',
     relation: ''
     },
@@ -121,12 +126,14 @@ export class CategoryListComponent implements OnInit {
     displayName: 'Nom',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
     { name: 'details',
     displayName: 'Description',
     type: 'string' ,
     entityType: 'String' ,
+    inputType: 'String',
     relation: ''
     },
   ];
@@ -196,7 +203,9 @@ export class CategoryListComponent implements OnInit {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
     this.selectedItem.set(null);
-    setTimeout(() => this.selectedItem.set(item), 0);
+
+     setTimeout(() => this.selectedItem.set(item), 0);
+
   }
 
   onSearch({ field, value }: { field: string; value: string }): void {
@@ -248,7 +257,7 @@ export class CategoryListComponent implements OnInit {
 
       this.service.update(this.itemId, data).subscribe({
         next: () => {
-          this.alert.show('Category mis(e) à jour avec succès', 'success');
+          this.alert.show('Mis(e) à jour "Category" en cours.', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -261,7 +270,7 @@ export class CategoryListComponent implements OnInit {
 
       this.service.create(data).subscribe({
         next: () => {
-          this.alert.show('Category créé(e) avec succès', 'success');
+          this.alert.show('Création "Category" en cours.  ', 'success');
           this.closeDrawer();
           this.refresh();
         },
@@ -295,6 +304,7 @@ export class CategoryListComponent implements OnInit {
 
   openDrawerForCreate() {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -309,6 +319,7 @@ export class CategoryListComponent implements OnInit {
 
   openDrawerForEdit(item: Category) {
     this.drawerVisible = false;
+    this.fetchDeps();
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -343,4 +354,14 @@ export class CategoryListComponent implements OnInit {
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
+
+
+    fetchDeps() {
+        }
+
+
+    getEntities(name: string) {
+    return [];
+    }
+
 }
