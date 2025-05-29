@@ -51,16 +51,6 @@ export class SettingViewComponent {
         entityType: 'Boolean',
         relation: ''
         },
-        { name: 'updatedAt',
-        displayName: '', type: 'string',
-        entityType: 'Date',
-        relation: ''
-        },
-        { name: 'reference',
-        displayName: '', type: 'string',
-        entityType: 'String',
-        relation: ''
-        },
   ];
 
   constructor() {

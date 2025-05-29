@@ -12,6 +12,7 @@ import {accountRoutes} from './features/account/account.routes';
 import {accountUserRoutes} from './features/AccountUser/accountUser.routes';
 import {chatRoutes} from './features/Chat/chat.routes';
 import {transactionRoutes} from './features/Transaction/transaction.routes';
+import {fileManagerRoutes} from './features/fileManager/fileManager.routes';
 
 export const routes: Routes = [
   ...categoryRoutes,
@@ -21,6 +22,7 @@ export const routes: Routes = [
   ...accountUserRoutes,
   ...chatRoutes,
   ...transactionRoutes,
+  ...fileManagerRoutes,
 
   { path: '', component: HomeComponent },
   { path: 'security/login', component: LoginComponent },

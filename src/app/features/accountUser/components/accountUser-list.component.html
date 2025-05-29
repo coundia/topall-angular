@@ -121,4 +121,6 @@
   [viewLink]="'/accountUser/' + itemId + '/view'"
   [addLink]="'/accountUser/new'"
   [getEntities]="getEntities.bind(this)"
+ [files]="files"
+ (filesChange)="files = $event"
 />

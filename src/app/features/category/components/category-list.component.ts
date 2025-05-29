@@ -53,6 +53,7 @@ export class CategoryListComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
+  files: File[] = [];
 
   searchField = 'name';
   searchTerm = '';
@@ -101,22 +102,6 @@ export class CategoryListComponent implements OnInit {
     defaultValue: 'true' ,
     inputType: 'Boolean',
     entityType: 'Boolean',
-    relation: ''
-    },
-    { name: 'updatedAt' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'Date',
-    entityType: 'Date',
-    relation: ''
-    },
-    { name: 'reference' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'String',
-    entityType: 'String',
     relation: ''
     },
   ];
@@ -250,7 +235,6 @@ export class CategoryListComponent implements OnInit {
 
   handleSave(data: any) {
     const now = new Date().toISOString();
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     if (this.editMode && this.itemId) {
 

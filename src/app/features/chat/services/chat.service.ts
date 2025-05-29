@@ -17,7 +17,6 @@ export class ChatService {
 
   private headers(): HttpHeaders {
     return new HttpHeaders({
-      Authorization: `Bearer ${this.auth.token()}`,
       'Content-Type': 'application/json',
     });
   }
@@ -37,11 +36,35 @@ export class ChatService {
       );
   }
 
-  create(dto: Partial<Chat>): Observable<any> {
-    return this.http.post(`${this.base}/commands/chat`, dto, {
-      headers: this.headers(),
-    });
+  create(dto:   Partial<Chat>): Observable<Chat> {
+    const form = new FormData();
+    if(dto.id != undefined && dto.id !== null && dto.id.length > 0) {
+        form.append('id', dto.id);
+    }
+    if(dto.messages != undefined && dto.messages !== null && dto.messages.length > 0) {
+        form.append('messages', dto.messages);
+    }
+    if(dto.responses != undefined && dto.responses !== null && dto.responses.length > 0) {
+        form.append('responses', dto.responses);
+    }
+    if(dto.responsesJson != undefined && dto.responsesJson !== null && dto.responsesJson.length > 0) {
+        form.append('responsesJson', dto.responsesJson);
+    }
+    if(dto.state != undefined && dto.state !== null && dto.state.length > 0) {
+        form.append('state', dto.state);
+    }
+    if(dto.account != undefined && dto.account !== null && dto.account.length > 0) {
+        form.append('account', dto.account);
+    }
+    if (dto.files) {
+      for (const file of dto.files) {
+        form.append('files', file);
+      }
+    }
+
+    return this.http.post<Chat>(`${this.base}/commands/chat`, form);
   }
+
 
   update(id: string, dto: Partial<Chat>): Observable<any> {
     return this.http.put(`${this.base}/commands/chat/${id}`, dto, {
@@ -87,8 +110,6 @@ export class ChatService {
 
   private getFieldType(field: string): 'string' | 'boolean' | 'date' {
     switch (field) {
-      case 'updatedAt':
-        return 'date';
       default:
         return 'string';
     }

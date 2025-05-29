@@ -10,7 +10,5 @@ export interface AccountUser {
     username: string;
     details?: string;
     isActive: boolean;
-    updatedAt?: string;
-    reference?: string;
 }
 

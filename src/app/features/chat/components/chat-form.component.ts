@@ -8,12 +8,13 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
-
+import {MultiFileInputComponent} from '../../../shared/components/files/multi-file-input.component';
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
+import {FileManager} from "../../fileManager/models/fileManager.model";
+import {FileManagerService} from "../../fileManager/services/fileManager.service";
 
 
 @Component({
@@ -21,6 +22,7 @@ import  { AccountService } from '../../account/services/account.service';
   standalone: true,
   imports: [CommonModule,
    ReactiveFormsModule,
+   MultiFileInputComponent,
     EntityPickerComponent,
     EntityToolbarActionComponent
     ],
@@ -39,6 +41,9 @@ export class ChatFormComponent implements OnInit {
 
     private readonly  accountService = inject(AccountService);
     accounts  =   signal<Account[]>([]);
+    files: File[] = [];
+    fileManagers  =   signal<FileManager[]>([]);
+    fileManagerService = inject(FileManagerService);
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -47,66 +52,51 @@ export class ChatFormComponent implements OnInit {
     responsesJson: [ ""  ],
     state: [ ""  ],
     account: [ ""  ],
-    updatedAt: [ ""  ],
-    reference: [ ""  ],
+    files: [null],
   });
 
   readonly fields: FieldDefinition[] = [
     { name: 'id',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'messages',
-    displayName: 'Message',
-     type: 'string',
+      displayName: 'Message',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'responses',
-    displayName: 'Réponses',
-     type: 'string',
+      displayName: 'Réponses',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'responsesJson',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'state',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'account',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'Account' ,
       inputType: 'String',
       relation: 'manyToOne'
-      },
-    { name: 'updatedAt',
-    displayName: '',
-     type: 'string',
-      entityType: 'Date' ,
-      inputType: 'Date',
-      relation: ''
-      },
-    { name: 'reference',
-    displayName: '',
-     type: 'string',
-      entityType: 'String' ,
-      inputType: 'String',
-      relation: ''
       },
   ];
 
@@ -121,8 +111,6 @@ export class ChatFormComponent implements OnInit {
                 responsesJson: existing.responsesJson,
                 state: existing.state,
                 account: existing.account,
-                updatedAt: toDatetimeLocalString(existing.updatedAt) || '',
-                reference: existing.reference,
         });
       } else {
         this.isLoading.set(true);
@@ -136,8 +124,6 @@ export class ChatFormComponent implements OnInit {
                     responsesJson: e.responsesJson,
                     state: e.state,
                     account: e.account,
-                    updatedAt: toDatetimeLocalString(e.updatedAt) || '',
-                    reference: e.reference,
               });
             }
             this.isLoading.set(false);
@@ -160,13 +146,12 @@ export class ChatFormComponent implements OnInit {
     const now = new Date().toISOString();
 
     const data: Partial<Chat> = {
-      ...this.form.getRawValue(),
-      updatedAt: now
+      ...this.form.getRawValue()
     };
 
     this.isLoading.set(true);
 
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
+    data.files = this.files?.length ? this.files : undefined;
 
     const request = this.isEdit()
       ? this.service.update(this.id!, data)
@@ -194,12 +179,25 @@ export class ChatFormComponent implements OnInit {
 
     fetchDeps() {
          this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+         if(this.id){
+           this.fileManagerService.search("name",this.id).subscribe(
+               data => this.fileManagers.set(data)
+           );
+         }
     }
 
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
     return [];
     }
+     onFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+          this.files = Array.from(input.files);
+        } else {
+          this.files = [];
+        }
+      }
 
 
 }

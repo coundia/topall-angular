@@ -121,4 +121,6 @@
   [viewLink]="'/setting/' + itemId + '/view'"
   [addLink]="'/setting/new'"
   [getEntities]="getEntities.bind(this)"
+ [files]="files"
+ (filesChange)="files = $event"
 />

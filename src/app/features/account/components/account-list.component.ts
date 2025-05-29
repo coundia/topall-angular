@@ -53,6 +53,7 @@ export class AccountListComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
+  files: File[] = [];
 
   searchField = 'name';
   searchTerm = '';
@@ -117,22 +118,6 @@ export class AccountListComponent implements OnInit {
     defaultValue: 'true' ,
     inputType: 'Boolean',
     entityType: 'Boolean',
-    relation: ''
-    },
-    { name: 'updatedAt' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'Date',
-    entityType: 'Date',
-    relation: ''
-    },
-    { name: 'reference' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'String',
-    entityType: 'String',
     relation: ''
     },
   ];
@@ -287,7 +272,6 @@ export class AccountListComponent implements OnInit {
 
   handleSave(data: any) {
     const now = new Date().toISOString();
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     if (this.editMode && this.itemId) {
 

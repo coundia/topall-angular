@@ -21,8 +21,6 @@ import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
-import {ChatbotComponent} from '../../../shared/chatbot/chatbot.component';
-import {ChatMessage} from '../../../shared/chatbot/chat-message.model';
 
 @Component({
   selector: 'app-chat-list',
@@ -43,8 +41,7 @@ import {ChatMessage} from '../../../shared/chatbot/chat-message.model';
     GlobalDrawerFormComponent,
     GlobalDrawerComponent,
     NgIf,
-    SortHeaderComponent,
-    ChatbotComponent
+    SortHeaderComponent
   ],
   templateUrl: './chat-list.component.html',
 })
@@ -58,6 +55,7 @@ export class ChatListComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
+  files: File[] = [];
 
   searchField = 'name';
   searchTerm = '';
@@ -118,22 +116,6 @@ export class ChatListComponent implements OnInit {
     inputType: 'String',
     entityType: 'Account',
     relation: 'manyToOne'
-    },
-    { name: 'updatedAt' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'Date',
-    entityType: 'Date',
-    relation: ''
-    },
-    { name: 'reference' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'String',
-    entityType: 'String',
-    relation: ''
     },
   ];
 
@@ -280,7 +262,6 @@ export class ChatListComponent implements OnInit {
 
   handleSave(data: any) {
     const now = new Date().toISOString();
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     if (this.editMode && this.itemId) {
 
@@ -381,7 +362,6 @@ export class ChatListComponent implements OnInit {
     });
   });
 
-
   selectedFieldType(): string {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
@@ -397,48 +377,4 @@ export class ChatListComponent implements OnInit {
     return [];
     }
 
-  chatMessages: ChatMessage[] = [
-    {
-      id: '1',
-      user: 'bot',
-      content: 'Hello! How can I help you?',
-      createdAt: new Date(),
-    }
-  ];
-
-  messages = () => this.chatMessages;
-
-  handleSend(event: { message: string, files: File[] }) {
-    this.chatMessages = [
-      ...this.chatMessages,
-      {
-        id: crypto.randomUUID(),
-        user: 'me',
-        content: event.message,
-        createdAt: new Date(),
-        files: event.files,
-      }
-    ];
-    // Optionally simulate bot response:
-    setTimeout(() => {
-      this.chatMessages = [
-        ...this.chatMessages,
-        {
-          id: crypto.randomUUID(),
-          user: 'bot',
-          content: 'I received your message!',
-          createdAt: new Date(),
-        }
-      ];
-    }, 800);
-  }
-
-  handleClear() {
-    this.chatMessages = [];
-  }
-
-  handleOCR(file: File) {
-    // Envoie à ton service OCR IA ici
-    // Ex: this.ocrService.extractText(file).subscribe(...)
-  }
 }

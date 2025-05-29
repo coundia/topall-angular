@@ -8,9 +8,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
-
 
 
 
@@ -42,58 +40,42 @@ export class CategoryFormComponent implements OnInit {
     typeCategoryRaw: [ "" , Validators.required ],
     details: [ ""  ],
     isActive: [ true , Validators.required ],
-    updatedAt: [ ""  ],
-    reference: [ ""  ],
   });
 
   readonly fields: FieldDefinition[] = [
     { name: 'id',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'name',
-    displayName: 'Nom',
-     type: 'string',
+      displayName: 'Nom',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'typeCategoryRaw',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'enum' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'details',
-    displayName: 'Description',
-     type: 'string',
+      displayName: 'Description',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'isActive',
-    displayName: '',
-     type: 'boolean',
+      displayName: '',
+      type: 'boolean',
       entityType: 'Boolean' ,
       inputType: 'Boolean',
-      relation: ''
-      },
-    { name: 'updatedAt',
-    displayName: '',
-     type: 'string',
-      entityType: 'Date' ,
-      inputType: 'Date',
-      relation: ''
-      },
-    { name: 'reference',
-    displayName: '',
-     type: 'string',
-      entityType: 'String' ,
-      inputType: 'String',
       relation: ''
       },
   ];
@@ -108,8 +90,6 @@ export class CategoryFormComponent implements OnInit {
                 typeCategoryRaw: existing.typeCategoryRaw,
                 details: existing.details,
                 isActive: existing.isActive,
-                updatedAt: toDatetimeLocalString(existing.updatedAt) || '',
-                reference: existing.reference,
         });
       } else {
         this.isLoading.set(true);
@@ -122,8 +102,6 @@ export class CategoryFormComponent implements OnInit {
                     typeCategoryRaw: e.typeCategoryRaw,
                     details: e.details,
                     isActive: e.isActive,
-                    updatedAt: toDatetimeLocalString(e.updatedAt) || '',
-                    reference: e.reference,
               });
             }
             this.isLoading.set(false);
@@ -145,13 +123,11 @@ export class CategoryFormComponent implements OnInit {
     const now = new Date().toISOString();
 
     const data: Partial<Category> = {
-      ...this.form.getRawValue(),
-      updatedAt: now
+      ...this.form.getRawValue()
     };
 
     this.isLoading.set(true);
 
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     const request = this.isEdit()
       ? this.service.update(this.id!, data)

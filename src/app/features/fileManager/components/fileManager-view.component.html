@@ -1,0 +1,63 @@
+<div class="max-w-xl mx-auto p-6 bg-base-100 rounded-2xl shadow-xl space-y-6">
+
+  <app-view-toolbar-actions
+    [backLink]="'/fileManager'"
+    [editLink]="'/fileManager/' + (item()?.id ?? id) + '/edit'"
+    [newLink]="'/fileManager/new'"
+    [showDelete]="true"
+    (delete)="onDelete()"
+  />
+
+  <h2 class="text-2xl font-bold text-center text-primary tracking-tight">
+    Détail FileManager #{{ item()?.id ?? id }}
+  </h2>
+
+  @if (item()?.uri){
+    <app-file-viewer
+      [file]="item()!"
+    />
+  }
+
+  @if (isLoading()) {
+    <div class="flex justify-center p-8">
+      <span class="loading loading-ring loading-lg"></span>
+    </div>
+  } @else if (item()) {
+    <div class="divide-y divide-base-200">
+      @for (field of fields; track field.name) {
+        <div class="py-4 flex items-start gap-6">
+          <span class="w-40 font-semibold text-base-content/70">
+            {{ field.displayName || (field.name | titlecase) }}
+          </span>
+          <span class="flex-1">
+            @if (field.type === 'boolean') {
+              <span class="badge" [ngClass]="getFieldValue(item()!, field.name) ? 'badge-success' : 'badge-error'">
+                {{ getFieldValue(item()!, field.name) ? 'Oui' : 'Non' }}
+              </span>
+            } @else {
+               @let relatedModel = getRelatedModel(item()!, field.name);
+               @if (relatedModel) {
+                    <a
+                      class="badge badge-primary badge-sm cursor-pointer hover:underline"
+                      [routerLink]="['/', field.name, relatedModel.id, 'view']"
+                      [title]="'Voir le détail de ' + relatedModel.name"
+                    >
+                    {{  relatedModel.name || '—' }}
+                    </a>
+                  } @else {
+                    <span class="badge badge-ghost badge-sm">
+                        {{  getFieldValue(item()!, field.name) || '—' }}
+                    </span>
+               }
+            }
+          </span>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="alert alert-error text-center">
+      FileManager introuvable.
+    </div>
+  }
+
+</div>

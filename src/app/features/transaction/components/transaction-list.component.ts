@@ -57,6 +57,7 @@ export class TransactionListComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
+  files: File[] = [];
 
   searchField = 'name';
   searchTerm = '';
@@ -143,22 +144,6 @@ export class TransactionListComponent implements OnInit {
     defaultValue: 'new Date().toISOString().substring(0, 10)' ,
     inputType: 'date',
     entityType: 'Date',
-    relation: ''
-    },
-    { name: 'updatedAt' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'Date',
-    entityType: 'Date',
-    relation: ''
-    },
-    { name: 'reference' ,
-    displayName: '',
-    type: 'string',
-    defaultValue: '&quot;&quot;' ,
-    inputType: 'String',
-    entityType: 'String',
     relation: ''
     },
   ];
@@ -350,7 +335,6 @@ export class TransactionListComponent implements OnInit {
   handleSave(data: any) {
     const now = new Date().toISOString();
     data.dateTransaction = new Date(data.dateTransaction || now).toISOString();
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     if (this.editMode && this.itemId) {
 

@@ -10,7 +10,6 @@ export interface Chat {
     state?: string;
     account?: string;
     accountModel?: Account;
-    updatedAt?: string;
-    reference?: string;
+    files?: any;
 }
 

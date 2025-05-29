@@ -9,7 +9,5 @@ export interface Account {
     currentBalance: number;
     previousBalance: number;
     isActive: boolean;
-    updatedAt?: string;
-    reference?: string;
 }
 

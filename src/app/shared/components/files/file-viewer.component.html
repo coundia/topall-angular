@@ -1,0 +1,25 @@
+<li
+  class="list-row flex items-center gap-4 px-2 py-3 w-full rounded-xl cursor-pointer transition
+         hover:bg-base-200 hover:shadow-lg hover:scale-[1.01] active:scale-100"
+  (click)="downloadFile()"
+>
+  <div class="flex-shrink-0">
+    @if (isImageFile(file)) {
+      <img class="size-10 rounded-box border object-cover" [src]="getFilePreviewUrl()" />
+    } @else {
+      <div class="size-10 rounded-box bg-primary/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-primary opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6c-1.1 0-2 .9-2 2z" stroke-width="2"/>
+        </svg>
+      </div>
+    }
+  </div>
+  <div class="list-col-grow min-w-0 flex-1">
+    <div class="font-semibold truncate">{{ file.originalName ?? "" }}</div>
+    <div class="text-xs opacity-60 flex gap-2 truncate">
+      <span>{{ getFileSize(file.size) }}</span>
+      <span>·</span>
+      <span>{{ file.mimeType ?? "" }}</span>
+    </div>
+  </div>
+</li>

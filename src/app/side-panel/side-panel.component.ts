@@ -1,8 +1,8 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../security/services/auth.service';
-import {SideLinkComponent} from '../components/app-side-link/app-side-link';
+import { AuthService } from '../shared/security/services/auth.service';
+import {SideLinkComponent} from '../shared/components/app-side-link/app-side-link';
 
 @Component({
   selector: 'app-side-panel',

@@ -55,16 +55,6 @@ export class AccountUserViewComponent {
         entityType: 'Boolean',
         relation: ''
         },
-        { name: 'updatedAt',
-        displayName: '', type: 'string',
-        entityType: 'Date',
-        relation: ''
-        },
-        { name: 'reference',
-        displayName: '', type: 'string',
-        entityType: 'String',
-        relation: ''
-        },
   ];
 
   constructor() {

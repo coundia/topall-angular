@@ -8,9 +8,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
-
 
 
 
@@ -44,72 +42,56 @@ export class AccountFormComponent implements OnInit {
     currentBalance: [ 0.0 , Validators.required ],
     previousBalance: [ 0.0 , Validators.required ],
     isActive: [ true , Validators.required ],
-    updatedAt: [ ""  ],
-    reference: [ ""  ],
   });
 
   readonly fields: FieldDefinition[] = [
     { name: 'id',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'name',
-    displayName: 'Nom',
-     type: 'string',
+      displayName: 'Nom',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'details',
-    displayName: 'Description',
-     type: 'string',
+      displayName: 'Description',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'currency',
-    displayName: 'Devise',
-     type: 'string',
+      displayName: 'Devise',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'String',
       relation: ''
       },
     { name: 'currentBalance',
-    displayName: 'Solde de départ',
-     type: 'number',
+      displayName: 'Solde de départ',
+      type: 'number',
       entityType: 'Double' ,
       inputType: 'Double',
       relation: ''
       },
     { name: 'previousBalance',
-    displayName: '',
-     type: 'number',
+      displayName: '',
+      type: 'number',
       entityType: 'Double' ,
       inputType: 'Double',
       relation: ''
       },
     { name: 'isActive',
-    displayName: 'Est active',
-     type: 'boolean',
+      displayName: 'Est active',
+      type: 'boolean',
       entityType: 'Boolean' ,
       inputType: 'Boolean',
-      relation: ''
-      },
-    { name: 'updatedAt',
-    displayName: '',
-     type: 'string',
-      entityType: 'Date' ,
-      inputType: 'Date',
-      relation: ''
-      },
-    { name: 'reference',
-    displayName: '',
-     type: 'string',
-      entityType: 'String' ,
-      inputType: 'String',
       relation: ''
       },
   ];
@@ -126,8 +108,6 @@ export class AccountFormComponent implements OnInit {
                 currentBalance: existing.currentBalance,
                 previousBalance: existing.previousBalance,
                 isActive: existing.isActive,
-                updatedAt: toDatetimeLocalString(existing.updatedAt) || '',
-                reference: existing.reference,
         });
       } else {
         this.isLoading.set(true);
@@ -142,8 +122,6 @@ export class AccountFormComponent implements OnInit {
                     currentBalance: e.currentBalance,
                     previousBalance: e.previousBalance,
                     isActive: e.isActive,
-                    updatedAt: toDatetimeLocalString(e.updatedAt) || '',
-                    reference: e.reference,
               });
             }
             this.isLoading.set(false);
@@ -165,13 +143,11 @@ export class AccountFormComponent implements OnInit {
     const now = new Date().toISOString();
 
     const data: Partial<Account> = {
-      ...this.form.getRawValue(),
-      updatedAt: now
+      ...this.form.getRawValue()
     };
 
     this.isLoading.set(true);
 
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
 
     const request = this.isEdit()
       ? this.service.update(this.id!, data)

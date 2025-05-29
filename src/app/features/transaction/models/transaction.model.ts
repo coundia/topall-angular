@@ -15,7 +15,5 @@ export interface Transaction {
     categoryModel?: Category;
     typeTransactionRaw: string;
     dateTransaction?: string;
-    updatedAt?: string;
-    reference?: string;
 }
 

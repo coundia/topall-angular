@@ -1,0 +1,15 @@
+.file-card {
+  @apply card card-border shadow bg-base-100 p-4;
+}
+.file-meta {
+  @apply flex items-center gap-4;
+}
+.file-content {
+  @apply mt-4 flex flex-col gap-3;
+}
+.file-img {
+  @apply rounded-lg border shadow max-h-96 object-contain;
+}
+.file-pdf {
+  @apply w-full max-h-96 rounded-lg border shadow min-h-[400px];
+}

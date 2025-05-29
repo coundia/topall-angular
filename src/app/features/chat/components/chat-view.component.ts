@@ -9,11 +9,14 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
+import {FileManager} from "../../fileManager/models/fileManager.model";
+import {FileManagerService} from "../../fileManager/services/fileManager.service";
+import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
 
 @Component({
   selector: 'app-chat-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+    imports: [CommonModule, RouterLink, EntityToolbarActionComponent, FileViewerComponent],
   templateUrl: './chat-view.component.html',
 })
 export class ChatViewComponent {
@@ -29,7 +32,11 @@ export class ChatViewComponent {
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
 
-  readonly fields: FieldDefinition[] = [
+    fileManagers  =   signal<FileManager[]>([]);
+    fileManagerService = inject(FileManagerService);
+
+
+    readonly fields: FieldDefinition[] = [
         { name: 'messages',
         displayName: 'Message', type: 'string',
         entityType: 'String',
@@ -55,20 +62,11 @@ export class ChatViewComponent {
         entityType: 'Account',
         relation: 'manyToOne'
         },
-        { name: 'updatedAt',
-        displayName: '', type: 'string',
-        entityType: 'Date',
-        relation: ''
-        },
-        { name: 'reference',
-        displayName: '', type: 'string',
-        entityType: 'String',
-        relation: ''
-        },
   ];
 
   constructor() {
     effect(() => {
+        this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -131,4 +129,16 @@ export class ChatViewComponent {
      return (item as any)[fieldName + 'Model'];
   }
 
+    fetchDeps() {
+      const  id = this.item()?.id ?? this.id ?? null;
+         if(id){
+            this.fileManagerService.search("objectId",id).subscribe(
+                data => this.fileManagers.set(data)
+            );
+        }
+    }
+
+    removeFile(file: FileManager) {
+
+    }
 }

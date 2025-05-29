@@ -7,7 +7,5 @@ export interface Category {
     typeCategoryRaw: string;
     details?: string;
     isActive: boolean;
-    updatedAt?: string;
-    reference?: string;
 }
 

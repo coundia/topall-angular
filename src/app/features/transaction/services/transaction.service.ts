@@ -17,7 +17,6 @@ export class TransactionService {
 
   private headers(): HttpHeaders {
     return new HttpHeaders({
-      Authorization: `Bearer ${this.auth.token()}`,
       'Content-Type': 'application/json',
     });
   }
@@ -36,12 +35,12 @@ export class TransactionService {
         })
       );
   }
-
   create(dto: Partial<Transaction>): Observable<any> {
     return this.http.post(`${this.base}/commands/transaction`, dto, {
       headers: this.headers(),
     });
   }
+
 
   update(id: string, dto: Partial<Transaction>): Observable<any> {
     return this.http.put(`${this.base}/commands/transaction/${id}`, dto, {
@@ -88,8 +87,6 @@ export class TransactionService {
   private getFieldType(field: string): 'string' | 'boolean' | 'date' {
     switch (field) {
       case 'dateTransaction':
-        return 'date';
-      case 'updatedAt':
         return 'date';
       default:
         return 'string';

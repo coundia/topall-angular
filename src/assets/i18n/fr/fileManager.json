@@ -1,0 +1,8 @@
+{
+  "fileManager": {
+	"title": "FileManager",
+	"new": "Nouveau fileManager",
+	"details": "Détails du fileManager",
+	"none": "Aucun fileManager disponible"
+  }
+}

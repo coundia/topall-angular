@@ -93,10 +93,6 @@
   } @else {
     <app-empty-state message="{{ 'chat.none' | translate }}"/>
   }
-
-
-
-
 </div>
 
 <app-global-drawer
@@ -125,12 +121,6 @@
   [viewLink]="'/chat/' + itemId + '/view'"
   [addLink]="'/chat/new'"
   [getEntities]="getEntities.bind(this)"
-/>
-
-
-<app-shared-chatbot
-  [messages]="messages"
-  (send)="handleSend($event)"
-  (clear)="handleClear()"
-
+ [files]="files"
+ (filesChange)="files = $event"
 />

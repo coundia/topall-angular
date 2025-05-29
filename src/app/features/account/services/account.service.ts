@@ -17,7 +17,6 @@ export class AccountService {
 
   private headers(): HttpHeaders {
     return new HttpHeaders({
-      Authorization: `Bearer ${this.auth.token()}`,
       'Content-Type': 'application/json',
     });
   }
@@ -36,12 +35,12 @@ export class AccountService {
         })
       );
   }
-
   create(dto: Partial<Account>): Observable<any> {
     return this.http.post(`${this.base}/commands/account`, dto, {
       headers: this.headers(),
     });
   }
+
 
   update(id: string, dto: Partial<Account>): Observable<any> {
     return this.http.put(`${this.base}/commands/account/${id}`, dto, {
@@ -87,8 +86,6 @@ export class AccountService {
 
   private getFieldType(field: string): 'string' | 'boolean' | 'date' {
     switch (field) {
-      case 'updatedAt':
-        return 'date';
       default:
         return 'string';
     }

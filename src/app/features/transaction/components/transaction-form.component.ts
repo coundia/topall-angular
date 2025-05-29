@@ -8,9 +8,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
-
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
@@ -54,86 +52,70 @@ export class TransactionFormComponent implements OnInit {
     category: [ ""  ],
     typeTransactionRaw: [ "" , Validators.required ],
     dateTransaction: [ new Date().toISOString().substring(0, 10)  ],
-    updatedAt: [ ""  ],
-    reference: [ ""  ],
   });
 
   readonly fields: FieldDefinition[] = [
     { name: 'id',
-    displayName: '',
-     type: 'string',
+      displayName: '',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'hidden',
       relation: ''
       },
     { name: 'amount',
-    displayName: 'Montant',
-     type: 'number',
+      displayName: 'Montant',
+      type: 'number',
       entityType: 'Double' ,
       inputType: 'number',
       relation: ''
       },
     { name: 'name',
-    displayName: 'Motif',
-     type: 'string',
+      displayName: 'Motif',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'text',
       relation: ''
       },
     { name: 'details',
-    displayName: 'Description',
-     type: 'string',
+      displayName: 'Description',
+      type: 'string',
       entityType: 'String' ,
       inputType: 'text',
       relation: ''
       },
     { name: 'isActive',
-    displayName: 'Activé',
-     type: 'boolean',
+      displayName: 'Activé',
+      type: 'boolean',
       entityType: 'Boolean' ,
       inputType: 'checkbox',
       relation: ''
       },
     { name: 'account',
-    displayName: 'Compte',
-     type: 'string',
+      displayName: 'Compte',
+      type: 'string',
       entityType: 'Account' ,
       inputType: 'hidden',
       relation: 'manyToOne'
       },
     { name: 'category',
-    displayName: 'Category',
-     type: 'string',
+      displayName: 'Category',
+      type: 'string',
       entityType: 'Category' ,
       inputType: 'hidden',
       relation: 'manyToOne'
       },
     { name: 'typeTransactionRaw',
-    displayName: 'Type',
-     type: 'string',
+      displayName: 'Type',
+      type: 'string',
       entityType: 'enum' ,
       inputType: 'text',
       relation: ''
       },
     { name: 'dateTransaction',
-    displayName: 'Date transaction',
-     type: 'string',
+      displayName: 'Date transaction',
+      type: 'string',
       entityType: 'Date' ,
       inputType: 'date',
-      relation: ''
-      },
-    { name: 'updatedAt',
-    displayName: '',
-     type: 'string',
-      entityType: 'Date' ,
-      inputType: 'Date',
-      relation: ''
-      },
-    { name: 'reference',
-    displayName: '',
-     type: 'string',
-      entityType: 'String' ,
-      inputType: 'String',
       relation: ''
       },
   ];
@@ -152,8 +134,6 @@ export class TransactionFormComponent implements OnInit {
                 category: existing.category,
                 typeTransactionRaw: existing.typeTransactionRaw,
                 dateTransaction: toDatetimeLocalString(existing.dateTransaction) || '',
-                updatedAt: toDatetimeLocalString(existing.updatedAt) || '',
-                reference: existing.reference,
         });
       } else {
         this.isLoading.set(true);
@@ -170,8 +150,6 @@ export class TransactionFormComponent implements OnInit {
                     category: e.category,
                     typeTransactionRaw: e.typeTransactionRaw,
                     dateTransaction: toDatetimeLocalString(e.dateTransaction) || '',
-                    updatedAt: toDatetimeLocalString(e.updatedAt) || '',
-                    reference: e.reference,
               });
             }
             this.isLoading.set(false);
@@ -194,14 +172,12 @@ export class TransactionFormComponent implements OnInit {
     const now = new Date().toISOString();
 
     const data: Partial<Transaction> = {
-      ...this.form.getRawValue(),
-      updatedAt: now
+      ...this.form.getRawValue()
     };
 
     this.isLoading.set(true);
 
-    data.dateTransaction = new Date(data.dateTransaction || now).toISOString();
-    data.updatedAt = new Date(data.updatedAt || now).toISOString();
+    data.dateTransaction = data.dateTransaction ? new Date(data.dateTransaction).toISOString(): "";
 
     const request = this.isEdit()
       ? this.service.update(this.id!, data)

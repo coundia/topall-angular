@@ -8,7 +8,5 @@ export interface Setting {
     locale: string;
     details?: string;
     isActive: boolean;
-    updatedAt?: string;
-    reference?: string;
 }
 

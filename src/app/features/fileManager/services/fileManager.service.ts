@@ -1,0 +1,93 @@
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FileManager } from '../models/fileManager.model';
+import { AuthService } from '../../../shared/security/services/auth.service';
+import { API_BASE } from '../../../shared/constantes/shared-imports';
+import { Observable, tap } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class FileManagerService {
+  private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
+  private readonly base = `${API_BASE}/v1`;
+
+  readonly fileManagers = signal<FileManager[]>([]);
+  readonly totalPages = signal(0);
+  readonly totalElements = signal(0);
+
+  private headers(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+  }
+
+  fetch(page = 0, limit = 10): Observable<{ content: FileManager[]; totalPages: number; totalElements: number }> {
+    return this.http
+      .get<{ content: FileManager[]; totalPages: number; totalElements: number }>(
+        `${this.base}/queries/fileManagers?page=${page}&limit=${limit}`,
+        { headers: this.headers() }
+      )
+      .pipe(
+        tap(res => {
+          this.fileManagers.set(res.content);
+          this.totalPages.set(res.totalPages ?? 0);
+          this.totalElements.set(res.totalElements ?? 0);
+        })
+      );
+  }
+  create(dto: Partial<FileManager>): Observable<any> {
+    return this.http.post(`${this.base}/commands/fileManager`, dto, {
+      headers: this.headers(),
+    });
+  }
+
+
+  update(id: string, dto: Partial<FileManager>): Observable<any> {
+    return this.http.put(`${this.base}/commands/fileManager/${id}`, dto, {
+      headers: this.headers(),
+    });
+  }
+
+  delete(id: string): Observable<any> {
+    return this.http.delete(`${this.base}/commands/fileManager/${id}`, {
+      headers: this.headers(),
+    });
+  }
+
+  search(field: string, value: string): Observable<FileManager[]> {
+    const fieldType = this.getFieldType(field) ?? 'string';
+    let formattedValue = value;
+
+    if (fieldType === 'boolean') {
+      formattedValue = value.toLowerCase() === 'true' ? 'true' : 'false';
+    }
+
+    if (fieldType === 'date') {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        formattedValue = date.toISOString().split('T')[0] + 'T00:00:00Z';
+      }
+    }
+
+    return this.http
+      .get<FileManager[]>(
+        `${this.base}/queries/fileManager/${field}?${field}=${encodeURIComponent(formattedValue)}`,
+        { headers: this.headers() }
+      )
+      .pipe(tap(res => this.fileManagers.set(res)));
+  }
+
+  getById(id: string): Observable<FileManager> {
+    return this.http.get<FileManager>(
+      `${this.base}/queries/fileManager/id?id=${encodeURIComponent(id)}`,
+      { headers: this.headers() }
+    );
+  }
+
+  private getFieldType(field: string): 'string' | 'boolean' | 'date' {
+    switch (field) {
+      default:
+        return 'string';
+    }
+  }
+}
