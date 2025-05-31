@@ -23,6 +23,8 @@ import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
 import { Category } from '../../category/models/category.model';
 import  { CategoryService } from '../../category/services/category.service';
+import {RouterLink} from '@angular/router';
+
 
 @Component({
   selector: 'app-transaction-list',
@@ -43,27 +45,31 @@ import  { CategoryService } from '../../category/services/category.service';
     GlobalDrawerFormComponent,
     GlobalDrawerComponent,
     NgIf,
-    SortHeaderComponent
+    SortHeaderComponent,
+    RouterLink
   ],
   templateUrl: './transaction-list.component.html',
 })
 export class TransactionListComponent implements OnInit {
-  readonly service = inject(TransactionService);
+  readonly transactionService = inject(TransactionService);
   readonly alert = inject(AlertService);
   readonly sortService = inject(SortService);
 
-  readonly list = this.service.transactions;
-  readonly totalPages = this.service.totalPages;
+  readonly list = this.transactionService.transactions;
+  readonly totalPages = this.transactionService.totalPages;
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
   files: File[] = [];
+
+  hasFiles = false;
 
   searchField = 'name';
   searchTerm = '';
 
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
+
 
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
@@ -227,7 +233,7 @@ export class TransactionListComponent implements OnInit {
 
   refresh(): void {
     this.isLoading.set(true);
-    this.service.fetch(this.page(), this.size()).subscribe({
+    this.transactionService.fetch(this.page(), this.size()).subscribe({
       next: () => this.isLoading.set(false),
       error: err => {
         this.alert.show('Erreur lors de la récupération des transactions.', 'error');
@@ -243,9 +249,9 @@ export class TransactionListComponent implements OnInit {
     const confirmed = window.confirm(`Supprimer "${item.id}" ?`);
     if (!confirmed) return;
 
-    this.service.delete(id).subscribe({
+    this.transactionService.delete(id).subscribe({
       next: () => {
-        this.alert.show(`Transaction "${item.id}" supprimé(e)`, 'success');
+        this.alert.show(`Suppression de "Transaction" "${item.id}" en cours...`, 'success');
         setTimeout(() => this.refresh(), 1500);
       },
       error: err => {
@@ -257,6 +263,9 @@ export class TransactionListComponent implements OnInit {
   showDetails(id: string): void {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
+
+    this.fetchDeps(item);
+
     this.selectedItem.set(null);
      if (item.account) {
         this.accountService.getById(item.account).subscribe({
@@ -297,7 +306,7 @@ export class TransactionListComponent implements OnInit {
     this.searchTerm = value;
     if (!value) return this.refresh();
     this.isLoading.set(true);
-    this.service.search(field, value).subscribe({
+    this.transactionService.search(field, value).subscribe({
       next: items => {
         this.list.set(items);
         this.isLoading.set(false);
@@ -339,7 +348,7 @@ export class TransactionListComponent implements OnInit {
     if (this.editMode && this.itemId) {
 
 
-      this.service.update(this.itemId, data).subscribe({
+      this.transactionService.update(this.itemId, data).subscribe({
         next: () => {
           this.alert.show('Mis(e) à jour "Transaction" en cours.', 'success');
           this.closeDrawer();
@@ -352,7 +361,7 @@ export class TransactionListComponent implements OnInit {
     } else {
 
 
-      this.service.create(data).subscribe({
+      this.transactionService.create(data).subscribe({
         next: () => {
           this.alert.show('Création "Transaction" en cours.  ', 'success');
           this.closeDrawer();
@@ -368,9 +377,9 @@ export class TransactionListComponent implements OnInit {
   handleDelete(id: string) {
     const confirmed = window.confirm('Supprimer cet(te) transaction ?');
     if (!confirmed) return;
-    this.service.delete(id).subscribe({
+    this.transactionService.delete(id).subscribe({
       next: () => {
-        this.alert.show('Transaction supprimé(e)', 'success');
+        this.alert.show('Suppression de "Transaction" en cours... ', 'success');
         this.closeDrawer();
         this.refresh();
       },
@@ -403,7 +412,7 @@ export class TransactionListComponent implements OnInit {
 
   openDrawerForEdit(item: Transaction) {
     this.drawerVisible = false;
-    this.fetchDeps();
+    this.fetchDeps(item);
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -439,17 +448,22 @@ export class TransactionListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+    fetchDeps(item?: Transaction): void {
 
-    fetchDeps() {
-             this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
-             this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
-        }
+        this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
+        this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
 
+        this.getFileManager(item);
+    }
 
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
         if (name === 'category') return this.categorys();
     return [];
     }
+
+    getFileManager(item?: Transaction): void {
+
+      }
 
 }

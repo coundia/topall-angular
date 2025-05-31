@@ -12,10 +12,13 @@ import  { AccountService } from '../../account/services/account.service';
 import { Category } from '../../category/models/category.model';
 import  { CategoryService } from '../../category/services/category.service';
 
+
 @Component({
   selector: 'app-transaction-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+
+],
   templateUrl: './transaction-view.component.html',
 })
 export class TransactionViewComponent {
@@ -27,11 +30,13 @@ export class TransactionViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<Transaction | null>(this.service.transactions().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
 
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
     private readonly  categoryService = inject(CategoryService);
     category  =   signal<Category | null>(null);
+
 
   readonly fields: FieldDefinition[] = [
         { name: 'amount',
@@ -78,6 +83,7 @@ export class TransactionViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -140,7 +146,7 @@ export class TransactionViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`Transaction "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de Transaction "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/transaction']);
         }, 600);
@@ -155,5 +161,8 @@ export class TransactionViewComponent {
    getRelatedModel(item: any, fieldName: string) {
      return (item as any)[fieldName + 'Model'];
   }
+
+   fetchDeps() {
+    }
 
 }

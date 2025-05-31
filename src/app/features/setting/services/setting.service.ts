@@ -41,12 +41,13 @@ export class SettingService {
     });
   }
 
-
   update(id: string, dto: Partial<Setting>): Observable<any> {
     return this.http.put(`${this.base}/commands/setting/${id}`, dto, {
       headers: this.headers(),
     });
   }
+
+
 
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.base}/commands/setting/${id}`, {

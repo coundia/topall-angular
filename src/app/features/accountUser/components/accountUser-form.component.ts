@@ -18,9 +18,10 @@ import  { AccountService } from '../../account/services/account.service';
   selector: 'app-accountUser-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+ 
     ],
   templateUrl: './accountUser-form.component.html',
 })
@@ -37,6 +38,8 @@ export class AccountUserFormComponent implements OnInit {
 
     private readonly  accountService = inject(AccountService);
     accounts  =   signal<Account[]>([]);
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -153,9 +156,12 @@ export class AccountUserFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/accountUser']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -167,11 +173,9 @@ export class AccountUserFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-    fetchDeps() {
+  fetchDeps() {
          this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
-    }
-
+  }
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
     return [];

@@ -8,10 +8,13 @@ import { EntityToolbarActionComponent } from '../../../shared/components/view-to
 import { AlertService } from '../../../shared/components/alert/alert.service';
 
 
+
 @Component({
   selector: 'app-category-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+
+],
   templateUrl: './category-view.component.html',
 })
 export class CategoryViewComponent {
@@ -23,6 +26,8 @@ export class CategoryViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<Category | null>(this.service.categorys().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
+
 
 
   readonly fields: FieldDefinition[] = [
@@ -50,6 +55,7 @@ export class CategoryViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -80,7 +86,7 @@ export class CategoryViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`Category "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de Category "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/category']);
         }, 600);
@@ -95,5 +101,8 @@ export class CategoryViewComponent {
    getRelatedModel(item: any, fieldName: string) {
      return (item as any)[fieldName + 'Model'];
   }
+
+   fetchDeps() {
+    }
 
 }

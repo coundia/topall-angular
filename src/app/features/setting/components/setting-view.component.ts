@@ -8,10 +8,13 @@ import { EntityToolbarActionComponent } from '../../../shared/components/view-to
 import { AlertService } from '../../../shared/components/alert/alert.service';
 
 
+
 @Component({
   selector: 'app-setting-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+
+],
   templateUrl: './setting-view.component.html',
 })
 export class SettingViewComponent {
@@ -23,6 +26,8 @@ export class SettingViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<Setting | null>(this.service.settings().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
+
 
 
   readonly fields: FieldDefinition[] = [
@@ -55,6 +60,7 @@ export class SettingViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -85,7 +91,7 @@ export class SettingViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`Setting "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de Setting "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/setting']);
         }, 600);
@@ -100,5 +106,8 @@ export class SettingViewComponent {
    getRelatedModel(item: any, fieldName: string) {
      return (item as any)[fieldName + 'Model'];
   }
+
+   fetchDeps() {
+    }
 
 }

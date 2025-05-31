@@ -16,9 +16,10 @@ import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
   selector: 'app-setting-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+ 
     ],
   templateUrl: './setting-form.component.html',
 })
@@ -33,6 +34,8 @@ export class SettingFormComponent implements OnInit {
   readonly isEdit = signal(!!this.id);
   readonly isLoading = signal(false);
 
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -124,6 +127,7 @@ export class SettingFormComponent implements OnInit {
       }
     }
 
+    this.fetchDeps();
 
   }
 
@@ -148,9 +152,12 @@ export class SettingFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/setting']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -162,8 +169,8 @@ export class SettingFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-
+  fetchDeps() {
+  }
     getEntities(name: string) {
     return [];
     }

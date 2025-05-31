@@ -104,6 +104,9 @@
    [editLink]="'/chat/' + selectedItem()?.id  + '/edit'"
   [viewLink]="'/chat/' + selectedItem()?.id  + '/view'"
   [addLink]="'/chat/new'"
+  [hasFiles] = "hasFiles"
+  [fileManagers]="fileManagers()"
+  [isFileManager]= false
 />
 
 <app-global-drawer-form
@@ -123,4 +126,7 @@
   [getEntities]="getEntities.bind(this)"
  [files]="files"
  (filesChange)="files = $event"
+ [hasFiles] = "hasFiles"
+  [fileManagers]="fileManagers()"
+  [isFileManager]= false
 />

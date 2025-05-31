@@ -49,13 +49,8 @@
         </thead>
         <tbody>
           @for (item of sortedList(); let i = $index; track item.id) {
-
-            <app-file-viewer
-              [file]="item"
-            />
-
             <tr class="hover">
-              <th> </th>
+              <th>{{  i + 1 }} </th>
               @for (field of fieldsToDisplay; track field.name) {
                 <td [ngSwitch]="field.type" class="truncate max-w-[12rem] pl-8">
 
@@ -109,6 +104,9 @@
    [editLink]="'/fileManager/' + selectedItem()?.id  + '/edit'"
   [viewLink]="'/fileManager/' + selectedItem()?.id  + '/view'"
   [addLink]="'/fileManager/new'"
+  [hasFiles] = "hasFiles"
+  [fileManagers]="fileManagers()"
+  [isFileManager]= true
 />
 
 <app-global-drawer-form
@@ -128,4 +126,7 @@
   [getEntities]="getEntities.bind(this)"
  [files]="files"
  (filesChange)="files = $event"
+ [hasFiles] = "hasFiles"
+  [fileManagers]="fileManagers()"
+  [isFileManager]= true
 />

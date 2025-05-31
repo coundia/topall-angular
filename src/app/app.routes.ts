@@ -29,13 +29,5 @@ export const routes: Routes = [
   { path: 'security/register', component: RegisterComponent },
   { path: 'security/forgot-password', component: ForgotPasswordComponent },
   { path: 'security/reset-password', component: ResetPasswordComponent },
-
-  {
-    path: 'dashboard',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./shared/dashboard/dashboard.component').then(m => m.DashboardComponent)
-  },
-
   { path: '**', redirectTo: '' }
 ];

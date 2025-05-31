@@ -19,7 +19,8 @@ import {SortHeaderComponent} from '../../../shared/components/tri/sort-header.co
 import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
-import {FileViewerComponent} from '../../../shared/components/files/file-viewer.component';
+
+import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
 
 @Component({
   selector: 'app-fileManager-list',
@@ -40,28 +41,31 @@ import {FileViewerComponent} from '../../../shared/components/files/file-viewer.
     GlobalDrawerFormComponent,
     GlobalDrawerComponent,
     NgIf,
-    SortHeaderComponent,
-    FileViewerComponent
+    SortHeaderComponent
   ],
   templateUrl: './fileManager-list.component.html',
 })
 export class FileManagerListComponent implements OnInit {
-  readonly service = inject(FileManagerService);
+  readonly fileManagerService = inject(FileManagerService);
   readonly alert = inject(AlertService);
   readonly sortService = inject(SortService);
 
-  readonly list = this.service.fileManagers;
-  readonly totalPages = this.service.totalPages;
+  readonly list = this.fileManagerService.fileManagers;
+  readonly totalPages = this.fileManagerService.totalPages;
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
   files: File[] = [];
+
+  hasFiles = false;
 
   searchField = 'name';
   searchTerm = '';
 
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
+
+    fileManagers  =   signal<FileManager[]>([]);
 
 
   readonly selectedItem = signal<FileManager | null>(null);
@@ -99,7 +103,7 @@ export class FileManagerListComponent implements OnInit {
     relation: ''
     },
     { name: 'objectName' ,
-    displayName: '',
+    displayName: 'Module',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
     inputType: 'String',
@@ -157,6 +161,13 @@ export class FileManagerListComponent implements OnInit {
   ];
 
   readonly fieldsToDisplay: FieldDefinition[] = [
+    { name: 'objectName',
+    displayName: 'Module',
+    type: 'string' ,
+    entityType: 'String' ,
+    inputType: 'String',
+    relation: ''
+    },
     { name: 'originalName',
     displayName: 'Nom',
     type: 'string' ,
@@ -200,7 +211,7 @@ export class FileManagerListComponent implements OnInit {
 
   refresh(): void {
     this.isLoading.set(true);
-    this.service.fetch(this.page(), this.size()).subscribe({
+    this.fileManagerService.fetch(this.page(), this.size()).subscribe({
       next: () => this.isLoading.set(false),
       error: err => {
         this.alert.show('Erreur lors de la récupération des fileManagers.', 'error');
@@ -216,9 +227,9 @@ export class FileManagerListComponent implements OnInit {
     const confirmed = window.confirm(`Supprimer "${item.id}" ?`);
     if (!confirmed) return;
 
-    this.service.delete(id).subscribe({
+    this.fileManagerService.delete(id).subscribe({
       next: () => {
-        this.alert.show(`FileManager "${item.id}" supprimé(e)`, 'success');
+        this.alert.show(`Suppression de "FileManager" "${item.id}" en cours...`, 'success');
         setTimeout(() => this.refresh(), 1500);
       },
       error: err => {
@@ -230,6 +241,9 @@ export class FileManagerListComponent implements OnInit {
   showDetails(id: string): void {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
+
+    this.fetchDeps(item);
+
     this.selectedItem.set(null);
 
      setTimeout(() => this.selectedItem.set(item), 0);
@@ -241,7 +255,7 @@ export class FileManagerListComponent implements OnInit {
     this.searchTerm = value;
     if (!value) return this.refresh();
     this.isLoading.set(true);
-    this.service.search(field, value).subscribe({
+    this.fileManagerService.search(field, value).subscribe({
       next: items => {
         this.list.set(items);
         this.isLoading.set(false);
@@ -282,7 +296,7 @@ export class FileManagerListComponent implements OnInit {
     if (this.editMode && this.itemId) {
 
 
-      this.service.update(this.itemId, data).subscribe({
+      this.fileManagerService.update(this.itemId, data).subscribe({
         next: () => {
           this.alert.show('Mis(e) à jour "FileManager" en cours.', 'success');
           this.closeDrawer();
@@ -295,7 +309,7 @@ export class FileManagerListComponent implements OnInit {
     } else {
 
 
-      this.service.create(data).subscribe({
+      this.fileManagerService.create(data).subscribe({
         next: () => {
           this.alert.show('Création "FileManager" en cours.  ', 'success');
           this.closeDrawer();
@@ -311,9 +325,9 @@ export class FileManagerListComponent implements OnInit {
   handleDelete(id: string) {
     const confirmed = window.confirm('Supprimer cet(te) fileManager ?');
     if (!confirmed) return;
-    this.service.delete(id).subscribe({
+    this.fileManagerService.delete(id).subscribe({
       next: () => {
-        this.alert.show('FileManager supprimé(e)', 'success');
+        this.alert.show('Suppression de "FileManager" en cours... ', 'success');
         this.closeDrawer();
         this.refresh();
       },
@@ -346,7 +360,7 @@ export class FileManagerListComponent implements OnInit {
 
   openDrawerForEdit(item: FileManager) {
     this.drawerVisible = false;
-    this.fetchDeps();
+    this.fetchDeps(item);
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -382,13 +396,23 @@ export class FileManagerListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+    fetchDeps(item?: FileManager): void {
 
-    fetchDeps() {
-        }
 
+    }
 
     getEntities(name: string) {
     return [];
     }
+
+    getFileManager(item?: FileManager): void {
+
+        if(!item?.id ){
+          return ;
+        }
+        this.fileManagerService.search('objectId', item.id).subscribe(files => {
+          this.fileManagers.set(files);
+        });
+      }
 
 }

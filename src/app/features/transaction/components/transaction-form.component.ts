@@ -20,9 +20,10 @@ import  { CategoryService } from '../../category/services/category.service';
   selector: 'app-transaction-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+
     ],
   templateUrl: './transaction-form.component.html',
 })
@@ -41,6 +42,8 @@ export class TransactionFormComponent implements OnInit {
     accounts  =   signal<Account[]>([]);
     private readonly  categoryService = inject(CategoryService);
     categorys  =   signal<Category[]>([]);
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -188,9 +191,12 @@ export class TransactionFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+               // this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/transaction']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -202,12 +208,10 @@ export class TransactionFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-    fetchDeps() {
+  fetchDeps() {
          this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
          this.categoryService.fetch(0,1000).subscribe(data => this.categorys.set(data.content));
-    }
-
+  }
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
         if (name === 'category') return this.categorys();

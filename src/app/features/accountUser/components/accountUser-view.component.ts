@@ -10,10 +10,13 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
 
+
 @Component({
   selector: 'app-accountUser-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+
+],
   templateUrl: './accountUser-view.component.html',
 })
 export class AccountUserViewComponent {
@@ -25,9 +28,11 @@ export class AccountUserViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<AccountUser | null>(this.service.accountUsers().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
 
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
+
 
   readonly fields: FieldDefinition[] = [
         { name: 'name',
@@ -59,6 +64,7 @@ export class AccountUserViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -105,7 +111,7 @@ export class AccountUserViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`AccountUser "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de AccountUser "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/accountUser']);
         }, 600);
@@ -120,5 +126,8 @@ export class AccountUserViewComponent {
    getRelatedModel(item: any, fieldName: string) {
      return (item as any)[fieldName + 'Model'];
   }
+
+   fetchDeps() {
+    }
 
 }

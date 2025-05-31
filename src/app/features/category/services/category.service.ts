@@ -41,12 +41,13 @@ export class CategoryService {
     });
   }
 
-
   update(id: string, dto: Partial<Category>): Observable<any> {
     return this.http.put(`${this.base}/commands/category/${id}`, dto, {
       headers: this.headers(),
     });
   }
+
+
 
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.base}/commands/category/${id}`, {

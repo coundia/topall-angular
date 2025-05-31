@@ -6,7 +6,11 @@
     {{ 'transaction.title' | translate }}
     </h2>
 
-    <app-search-box
+
+    <a class="btn btn-sm btn-primary btn-outline" [routerLink]="'/transaction/dashboard'">
+      {{ 'dashboard.title' | translate }}</a>
+
+      <app-search-box
       [fields]="fieldsToDisplay"
       [searchField]="searchField"
       [searchTerm]="searchTerm"
@@ -104,6 +108,8 @@
    [editLink]="'/transaction/' + selectedItem()?.id  + '/edit'"
   [viewLink]="'/transaction/' + selectedItem()?.id  + '/view'"
   [addLink]="'/transaction/new'"
+  [hasFiles] = "hasFiles"
+  [isFileManager]= false
 />
 
 <app-global-drawer-form
@@ -123,4 +129,6 @@
   [getEntities]="getEntities.bind(this)"
  [files]="files"
  (filesChange)="files = $event"
+ [hasFiles] = "hasFiles"
+  [isFileManager]= false
 />

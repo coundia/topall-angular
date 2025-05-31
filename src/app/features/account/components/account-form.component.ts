@@ -16,9 +16,10 @@ import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
   selector: 'app-account-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+ 
     ],
   templateUrl: './account-form.component.html',
 })
@@ -33,6 +34,8 @@ export class AccountFormComponent implements OnInit {
   readonly isEdit = signal(!!this.id);
   readonly isLoading = signal(false);
 
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -134,6 +137,7 @@ export class AccountFormComponent implements OnInit {
       }
     }
 
+    this.fetchDeps();
 
   }
 
@@ -158,9 +162,12 @@ export class AccountFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/account']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -172,8 +179,8 @@ export class AccountFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-
+  fetchDeps() {
+  }
     getEntities(name: string) {
     return [];
     }

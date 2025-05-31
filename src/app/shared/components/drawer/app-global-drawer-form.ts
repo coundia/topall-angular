@@ -12,11 +12,12 @@ import { FieldDefinition } from '../models/field-definition';
 import {EntityPickerComponent} from '../../picker/app-entity-picker';
 import {RouterLink} from '@angular/router';
 import {MultiFileInputComponent} from '../files/multi-file-input.component';
+import {FileViewerComponent} from '../files/file-viewer.component';
 
 @Component({
   selector: 'app-global-drawer-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EntityPickerComponent, RouterLink, MultiFileInputComponent],
+  imports: [CommonModule, ReactiveFormsModule, EntityPickerComponent, RouterLink, MultiFileInputComponent, FileViewerComponent],
   templateUrl: './app-global-drawer-form.html',
 })
 export class GlobalDrawerFormComponent {
@@ -39,8 +40,14 @@ export class GlobalDrawerFormComponent {
   @Output() delete = new EventEmitter<string>();
   @Output() closed = new EventEmitter<void>();
 
+  @Input() hasFiles = false;
+
   readonly visible = signal(true);
   readonly isVisible = computed(() => this.visible());
+
+
+  @Input() fileManagers!: any[];
+  @Input() isFileManager = false;
 
   close(): void {
     this.visible.set(false);

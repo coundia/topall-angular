@@ -7,6 +7,7 @@ import { FileManager } from '../models/fileManager.model';
 import { AlertService } from '../../../shared/components/alert/alert.service';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
+import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
 
 
@@ -15,10 +16,11 @@ import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
   selector: 'app-fileManager-form',
   standalone: true,
   imports: [CommonModule,
-    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
-  ],
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
+   ReactiveFormsModule,
+
+    ],
   templateUrl: './fileManager-form.component.html',
 })
 export class FileManagerFormComponent implements OnInit {
@@ -32,6 +34,8 @@ export class FileManagerFormComponent implements OnInit {
   readonly isEdit = signal(!!this.id);
   readonly isLoading = signal(false);
 
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -77,7 +81,7 @@ export class FileManagerFormComponent implements OnInit {
       relation: ''
       },
     { name: 'objectName',
-      displayName: '',
+      displayName: 'Module',
       type: 'string',
       entityType: 'String' ,
       inputType: 'String',
@@ -173,6 +177,7 @@ export class FileManagerFormComponent implements OnInit {
       }
     }
 
+    this.fetchDeps();
 
   }
 
@@ -197,9 +202,12 @@ export class FileManagerFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/fileManager']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -211,8 +219,8 @@ export class FileManagerFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-
+  fetchDeps() {
+  }
     getEntities(name: string) {
     return [];
     }

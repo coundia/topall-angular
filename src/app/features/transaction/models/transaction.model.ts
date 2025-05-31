@@ -1,7 +1,7 @@
 import { Account } from '../../account/models/account.model';
 import { Category } from '../../category/models/category.model';
 
-export type TypeTransaction = 'TYPE1' | 'TYPE2';
+export type TypeTransaction = 'IN' | 'OUT';
 
 export interface Transaction {
     id: string;

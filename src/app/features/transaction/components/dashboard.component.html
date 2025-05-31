@@ -1,0 +1,126 @@
+<div class="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 py-6">
+  <div class="container mx-auto max-w-7xl px-4 space-y-10 animate-fade-in">
+
+    <div class="card bg-base-100/90 backdrop-blur-sm border border-base-300/50 rounded-3xl shadow-2xl p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-2xl sm:text-3xl font-bold text-primary">Transactions</h2>
+        <span class="badge badge-lg badge-outline px-4 py-2 font-semibold">{{ lineLabels().length }}</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <label class="input input-bordered bg-base-200/80 w-44 flex items-center gap-2">
+          <input
+            type="date"
+            class="bg-transparent flex-1 outline-none"
+            [ngModel]="dateStart()"
+            (ngModelChange)="onStartDateChange($event)"
+          />
+        </label>
+        <span class="opacity-70 font-semibold">au</span>
+        <label class="input input-bordered bg-base-200/80 w-44 flex items-center gap-2">
+          <input
+            type="date"
+            class="bg-transparent flex-1 outline-none"
+            [ngModel]="dateEnd()"
+            (ngModelChange)="onEndDateChange($event)"
+          />
+        </label>
+
+        @if (totalPages() > 1) {
+          <div class="join join-item ml-auto">
+            <button class="btn btn-sm btn-outline join-item" [disabled]="page() <= 0" (click)="prevPage()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="flex items-center px-3 font-mono font-bold text-base-content/80">{{ page() + 1 }}
+              / {{ totalPages() }}</span>
+            <button class="btn btn-sm btn-outline join-item" [disabled]="page() + 1 >= totalPages()"
+                    (click)="nextPage()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-6 gap-8">
+      @if (!selectedFilterDate()) {
+        <div class="@if(!selectedFilterDate()) { xl:col-span-6 } @else { xl:col-span-4 } space-y-8">
+          <app-chart-line
+            [labels]="lineLabels()"
+            [datasets]="lineDatasets()"
+            (chartClick)="chartClicked($event)"
+          ></app-chart-line>
+        </div>
+      }
+
+      @if (selectedFilterDate()) {
+        <div class="  justify-between w-full xl:col-span-6 space-y-6">
+          <div class="flex">
+            <button class="btn btn-primary btn-sm flex justify-end-safe " (click)="resetSelectedDate()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Afficher le graphique
+            </button>
+          </div>
+          <app-entity-list-by-date
+            [date]="selectedFilterDate()"
+            [searchField]="'dateTransaction'"
+            [service]="transactionService"
+            [itemTemplate]="transactionTemplate"
+          ></app-entity-list-by-date>
+
+        </div>
+      }
+
+    </div>
+
+    <ng-template #transactionTemplate let-tx>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center py-3 w-full">
+        <span class="font-semibold truncate">{{ tx.name }}</span>
+        <span class="text-sm">
+      Montant: <span class="font-mono">{{ tx.amount | number:'1.0-2' }}</span>
+    </span>
+        <span class="text-xs text-base-content/60 sm:justify-self-end">
+      Type: {{ tx.typeTransactionRaw }}
+    </span>
+      </div>
+    </ng-template>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <app-chart-bar
+        [labels]="barLabels()"
+        [datasets]="barDatasets()"
+        (update)="updateBarChart()"
+        (chartClick)="onBarChartClick($event)"
+        class="w-full"
+      ></app-chart-bar>
+
+      <app-chart-pie
+        [labels]="pieLabels()"
+        [datasets]="pieDatasets()"
+        class="w-full"
+      ></app-chart-pie>
+    </div>
+
+    <app-chart-radar
+      [labels]="radarLabels()"
+      [datasets]="radarDatasets()"
+      [options]="radarOptions"
+
+      class="w-full"
+    />
+
+
+
+
+  </div>
+
+</div>

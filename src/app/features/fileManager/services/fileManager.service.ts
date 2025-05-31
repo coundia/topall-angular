@@ -41,12 +41,13 @@ export class FileManagerService {
     });
   }
 
-
   update(id: string, dto: Partial<FileManager>): Observable<any> {
     return this.http.put(`${this.base}/commands/fileManager/${id}`, dto, {
       headers: this.headers(),
     });
   }
+
+
 
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.base}/commands/fileManager/${id}`, {
@@ -55,7 +56,7 @@ export class FileManagerService {
   }
 
   search(field: string, value: string): Observable<FileManager[]> {
-    const fieldType = this.getFieldType(field) ?? 'string';
+    const fieldType = this.getFieldType(field);
     let formattedValue = value;
 
     if (fieldType === 'boolean') {

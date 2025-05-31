@@ -8,6 +8,8 @@ import {httpLoaderFactory} from './shared/translation/httpLoaderFactory';
 import {AuthInterceptor} from './shared/security/interceptors/auth.interceptor';
 
 
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -21,7 +23,7 @@ export const appConfig: ApplicationConfig = {
       },
       defaultLanguage: 'fr',
     }),
+    provideCharts(withDefaultRegisterables()),
   ],
 };
-
 

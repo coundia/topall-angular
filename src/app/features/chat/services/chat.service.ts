@@ -66,11 +66,36 @@ export class ChatService {
   }
 
 
-  update(id: string, dto: Partial<Chat>): Observable<any> {
-    return this.http.put(`${this.base}/commands/chat/${id}`, dto, {
-      headers: this.headers(),
-    });
+    update(id: string, dto: Partial<Chat>): Observable<any> {
+
+    const form = new FormData();
+    if(dto.id != undefined && dto.id !== null && dto.id.length > 0) {
+    form.append('id', dto.id);
+    }
+    if(dto.messages != undefined && dto.messages !== null && dto.messages.length > 0) {
+    form.append('messages', dto.messages);
+    }
+    if(dto.responses != undefined && dto.responses !== null && dto.responses.length > 0) {
+    form.append('responses', dto.responses);
+    }
+    if(dto.responsesJson != undefined && dto.responsesJson !== null && dto.responsesJson.length > 0) {
+    form.append('responsesJson', dto.responsesJson);
+    }
+    if(dto.state != undefined && dto.state !== null && dto.state.length > 0) {
+    form.append('state', dto.state);
+    }
+    if(dto.account != undefined && dto.account !== null && dto.account.length > 0) {
+    form.append('account', dto.account);
+    }
+    if (dto.files) {
+    for (const file of dto.files) {
+    form.append('files', file);
+    }
+    }
+
+    return this.http.put(`${this.base}/commands/chat/${id}`, form);
   }
+
 
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.base}/commands/chat/${id}`, {

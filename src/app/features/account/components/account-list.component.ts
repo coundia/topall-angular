@@ -20,6 +20,7 @@ import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 
+
 @Component({
   selector: 'app-account-list',
   standalone: true,
@@ -44,22 +45,25 @@ import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Pars
   templateUrl: './account-list.component.html',
 })
 export class AccountListComponent implements OnInit {
-  readonly service = inject(AccountService);
+  readonly accountService = inject(AccountService);
   readonly alert = inject(AlertService);
   readonly sortService = inject(SortService);
 
-  readonly list = this.service.accounts;
-  readonly totalPages = this.service.totalPages;
+  readonly list = this.accountService.accounts;
+  readonly totalPages = this.accountService.totalPages;
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
   files: File[] = [];
+
+  hasFiles = false;
 
   searchField = 'name';
   searchTerm = '';
 
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
+
 
 
   readonly selectedItem = signal<Account | null>(null);
@@ -194,7 +198,7 @@ export class AccountListComponent implements OnInit {
 
   refresh(): void {
     this.isLoading.set(true);
-    this.service.fetch(this.page(), this.size()).subscribe({
+    this.accountService.fetch(this.page(), this.size()).subscribe({
       next: () => this.isLoading.set(false),
       error: err => {
         this.alert.show('Erreur lors de la récupération des accounts.', 'error');
@@ -210,9 +214,9 @@ export class AccountListComponent implements OnInit {
     const confirmed = window.confirm(`Supprimer "${item.id}" ?`);
     if (!confirmed) return;
 
-    this.service.delete(id).subscribe({
+    this.accountService.delete(id).subscribe({
       next: () => {
-        this.alert.show(`Account "${item.id}" supprimé(e)`, 'success');
+        this.alert.show(`Suppression de "Account" "${item.id}" en cours...`, 'success');
         setTimeout(() => this.refresh(), 1500);
       },
       error: err => {
@@ -224,6 +228,9 @@ export class AccountListComponent implements OnInit {
   showDetails(id: string): void {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
+
+    this.fetchDeps(item);
+
     this.selectedItem.set(null);
 
      setTimeout(() => this.selectedItem.set(item), 0);
@@ -235,7 +242,7 @@ export class AccountListComponent implements OnInit {
     this.searchTerm = value;
     if (!value) return this.refresh();
     this.isLoading.set(true);
-    this.service.search(field, value).subscribe({
+    this.accountService.search(field, value).subscribe({
       next: items => {
         this.list.set(items);
         this.isLoading.set(false);
@@ -276,7 +283,7 @@ export class AccountListComponent implements OnInit {
     if (this.editMode && this.itemId) {
 
 
-      this.service.update(this.itemId, data).subscribe({
+      this.accountService.update(this.itemId, data).subscribe({
         next: () => {
           this.alert.show('Mis(e) à jour "Account" en cours.', 'success');
           this.closeDrawer();
@@ -289,7 +296,7 @@ export class AccountListComponent implements OnInit {
     } else {
 
 
-      this.service.create(data).subscribe({
+      this.accountService.create(data).subscribe({
         next: () => {
           this.alert.show('Création "Account" en cours.  ', 'success');
           this.closeDrawer();
@@ -305,9 +312,9 @@ export class AccountListComponent implements OnInit {
   handleDelete(id: string) {
     const confirmed = window.confirm('Supprimer cet(te) account ?');
     if (!confirmed) return;
-    this.service.delete(id).subscribe({
+    this.accountService.delete(id).subscribe({
       next: () => {
-        this.alert.show('Account supprimé(e)', 'success');
+        this.alert.show('Suppression de "Account" en cours... ', 'success');
         this.closeDrawer();
         this.refresh();
       },
@@ -340,7 +347,7 @@ export class AccountListComponent implements OnInit {
 
   openDrawerForEdit(item: Account) {
     this.drawerVisible = false;
-    this.fetchDeps();
+    this.fetchDeps(item);
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -376,13 +383,18 @@ export class AccountListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+    fetchDeps(item?: Account): void {
 
-    fetchDeps() {
-        }
 
+        this.getFileManager(item);
+    }
 
     getEntities(name: string) {
     return [];
     }
+
+    getFileManager(item?: Account): void {
+
+      }
 
 }

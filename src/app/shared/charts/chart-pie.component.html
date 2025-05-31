@@ -1,0 +1,13 @@
+<div #chartContainer
+     class="flex items-center justify-center bg-base-100 rounded-2xl shadow-lg relative group transition-all duration-300 w-full aspect-[4/3]"
+     [class.z-50]="isFullscreen()">
+  <app-fullscreen-button (toggle)="toggleFullscreen()"  />
+  <canvas baseChart
+          [data]="pieChartData()"
+          [options]="pieChartOptions"
+          [type]="pieChartType"
+          (chartClick)="onChartClick($event)"
+          (chartHover)="onChartHover($event)"
+
+  ></canvas>
+</div>

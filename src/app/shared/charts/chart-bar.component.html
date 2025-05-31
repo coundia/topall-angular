@@ -1,0 +1,23 @@
+<div #chartContainer
+     class=" flex justify-center  bg-base-100 rounded-2xl shadow-lg relative group transition-all duration-300 w-full aspect-[4/3]"
+     [class.z-50]="isFullscreen()">
+  @if (!isFullscreen()) {
+    <button type="button" class="absolute top-4 right-4 btn btn-sm btn-circle btn-ghost opacity-80 group-hover:opacity-100 z-20"
+            (click)="toggleFullscreen()" aria-label="Agrandir le graphe">
+      <svg class="w-6 h-6" fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v2a2 2 0 0 1-2 2H4m7 12v-2a2 2 0 0 1 2-2h5m0-7h-2a2 2 0 0 1-2-2V4"/></svg>
+    </button>
+  }
+  @if (isFullscreen()) {
+    <button type="button" class="absolute top-4 right-4 btn btn-sm btn-circle btn-ghost opacity-80 group-hover:opacity-100 z-20"
+            (click)="toggleFullscreen()" aria-label="Réduire le graphe">
+      <svg class="w-6 h-6" fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M15 15v2a2 2 0 0 0 2 2h3m-7-12V5a2 2 0 0 0-2-2H5"/></svg>
+    </button>
+  }
+  <canvas baseChart
+          [data]="barChartData()"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          (chartClick)="onChartClick($event)"
+          (chartHover)="onChartHover($event)"
+          class="w-full h-full"></canvas>
+</div>

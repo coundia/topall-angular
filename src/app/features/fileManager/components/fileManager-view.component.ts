@@ -6,13 +6,16 @@ import { FileManager } from '../models/fileManager.model';
 import { FieldDefinition } from '../../../shared/components/models/field-definition';
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import { AlertService } from '../../../shared/components/alert/alert.service';
-import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
 
+
+import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
 
 @Component({
   selector: 'app-fileManager-view',
   standalone: true,
-	imports: [CommonModule, RouterLink, EntityToolbarActionComponent, FileViewerComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+ FileViewerComponent
+],
   templateUrl: './fileManager-view.component.html',
 })
 export class FileManagerViewComponent {
@@ -24,7 +27,10 @@ export class FileManagerViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<FileManager | null>(this.service.fileManagers().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
 
+
+    fileManagers  =   signal<FileManager[]>([]);
 
   readonly fields: FieldDefinition[] = [
         { name: 'name',
@@ -43,7 +49,7 @@ export class FileManagerViewComponent {
         relation: ''
         },
         { name: 'objectName',
-        displayName: '', type: 'string',
+        displayName: 'Module', type: 'string',
         entityType: 'String',
         relation: ''
         },
@@ -81,6 +87,7 @@ export class FileManagerViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -111,7 +118,7 @@ export class FileManagerViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`FileManager "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de FileManager "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/fileManager']);
         }, 600);
@@ -127,4 +134,10 @@ export class FileManagerViewComponent {
      return (item as any)[fieldName + 'Model'];
   }
 
+   fetchDeps() {
+    }
+
+    removeFile(file: FileManager) {
+
+    }
 }

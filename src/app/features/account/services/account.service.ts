@@ -41,12 +41,13 @@ export class AccountService {
     });
   }
 
-
   update(id: string, dto: Partial<Account>): Observable<any> {
     return this.http.put(`${this.base}/commands/account/${id}`, dto, {
       headers: this.headers(),
     });
   }
+
+
 
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.base}/commands/account/${id}`, {

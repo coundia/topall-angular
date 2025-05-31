@@ -22,6 +22,10 @@ import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Pars
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
 
+import {FileManager} from "../../fileManager/models/fileManager.model";
+import {FileManagerService} from "../../fileManager/services/fileManager.service";
+import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
+
 @Component({
   selector: 'app-chat-list',
   standalone: true,
@@ -46,22 +50,27 @@ import  { AccountService } from '../../account/services/account.service';
   templateUrl: './chat-list.component.html',
 })
 export class ChatListComponent implements OnInit {
-  readonly service = inject(ChatService);
+  readonly chatService = inject(ChatService);
   readonly alert = inject(AlertService);
   readonly sortService = inject(SortService);
 
-  readonly list = this.service.chats;
-  readonly totalPages = this.service.totalPages;
+  readonly list = this.chatService.chats;
+  readonly totalPages = this.chatService.totalPages;
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
   files: File[] = [];
+
+  hasFiles = true;
 
   searchField = 'name';
   searchTerm = '';
 
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
+
+    fileManagers  =   signal<FileManager[]>([]);
+    fileManagerService = inject(FileManagerService);
 
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
@@ -73,7 +82,7 @@ export class ChatListComponent implements OnInit {
     displayName: '',
     type: 'string',
     defaultValue: '&quot;&quot;' ,
-    inputType: 'String',
+    inputType: 'hidden',
     entityType: 'String',
     relation: ''
     },
@@ -170,7 +179,7 @@ export class ChatListComponent implements OnInit {
 
   refresh(): void {
     this.isLoading.set(true);
-    this.service.fetch(this.page(), this.size()).subscribe({
+    this.chatService.fetch(this.page(), this.size()).subscribe({
       next: () => this.isLoading.set(false),
       error: err => {
         this.alert.show('Erreur lors de la récupération des chats.', 'error');
@@ -186,9 +195,9 @@ export class ChatListComponent implements OnInit {
     const confirmed = window.confirm(`Supprimer "${item.id}" ?`);
     if (!confirmed) return;
 
-    this.service.delete(id).subscribe({
+    this.chatService.delete(id).subscribe({
       next: () => {
-        this.alert.show(`Chat "${item.id}" supprimé(e)`, 'success');
+        this.alert.show(`Suppression de "Chat" "${item.id}" en cours...`, 'success');
         setTimeout(() => this.refresh(), 1500);
       },
       error: err => {
@@ -200,6 +209,9 @@ export class ChatListComponent implements OnInit {
   showDetails(id: string): void {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
+
+    this.fetchDeps(item);
+
     this.selectedItem.set(null);
      if (item.account) {
         this.accountService.getById(item.account).subscribe({
@@ -225,7 +237,7 @@ export class ChatListComponent implements OnInit {
     this.searchTerm = value;
     if (!value) return this.refresh();
     this.isLoading.set(true);
-    this.service.search(field, value).subscribe({
+    this.chatService.search(field, value).subscribe({
       next: items => {
         this.list.set(items);
         this.isLoading.set(false);
@@ -266,7 +278,7 @@ export class ChatListComponent implements OnInit {
     if (this.editMode && this.itemId) {
 
 
-      this.service.update(this.itemId, data).subscribe({
+      this.chatService.update(this.itemId, data).subscribe({
         next: () => {
           this.alert.show('Mis(e) à jour "Chat" en cours.', 'success');
           this.closeDrawer();
@@ -279,7 +291,7 @@ export class ChatListComponent implements OnInit {
     } else {
 
 
-      this.service.create(data).subscribe({
+      this.chatService.create(data).subscribe({
         next: () => {
           this.alert.show('Création "Chat" en cours.  ', 'success');
           this.closeDrawer();
@@ -295,9 +307,9 @@ export class ChatListComponent implements OnInit {
   handleDelete(id: string) {
     const confirmed = window.confirm('Supprimer cet(te) chat ?');
     if (!confirmed) return;
-    this.service.delete(id).subscribe({
+    this.chatService.delete(id).subscribe({
       next: () => {
-        this.alert.show('Chat supprimé(e)', 'success');
+        this.alert.show('Suppression de "Chat" en cours... ', 'success');
         this.closeDrawer();
         this.refresh();
       },
@@ -330,7 +342,7 @@ export class ChatListComponent implements OnInit {
 
   openDrawerForEdit(item: Chat) {
     this.drawerVisible = false;
-    this.fetchDeps();
+    this.fetchDeps(item);
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -366,15 +378,26 @@ export class ChatListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+    fetchDeps(item?: Chat): void {
 
-    fetchDeps() {
-             this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
-        }
+        this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
 
+        this.getFileManager(item);
+    }
 
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
     return [];
     }
+
+    getFileManager(item?: Chat): void {
+
+        if(!item?.id ){
+          return ;
+        }
+        this.fileManagerService.search('objectId', item.id).subscribe(files => {
+          this.fileManagers.set(files);
+        });
+      }
 
 }

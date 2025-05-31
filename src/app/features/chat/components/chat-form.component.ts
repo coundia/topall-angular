@@ -9,22 +9,24 @@ import { FieldDefinition } from '../../../shared/components/models/field-definit
 import { EntityToolbarActionComponent } from '../../../shared/components/view-toolbar-actions/view-toolbar-actions';
 import {toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
+import {FileManager} from "../../fileManager/models/fileManager.model";
+import {FileManagerService} from "../../fileManager/services/fileManager.service";
 import {MultiFileInputComponent} from '../../../shared/components/files/multi-file-input.component';
+import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
-import {FileManager} from "../../fileManager/models/fileManager.model";
-import {FileManagerService} from "../../fileManager/services/fileManager.service";
 
 
 @Component({
   selector: 'app-chat-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
    MultiFileInputComponent,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+    FileViewerComponent,FileViewerComponent 
     ],
   templateUrl: './chat-form.component.html',
 })
@@ -42,8 +44,10 @@ export class ChatFormComponent implements OnInit {
     private readonly  accountService = inject(AccountService);
     accounts  =   signal<Account[]>([]);
     files: File[] = [];
-    fileManagers  =   signal<FileManager[]>([]);
-    fileManagerService = inject(FileManagerService);
+
+fileManagers  =   signal<FileManager[]>([]);
+fileManagerService = inject(FileManagerService);
+ hasFiles = true;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -60,7 +64,7 @@ export class ChatFormComponent implements OnInit {
       displayName: '',
       type: 'string',
       entityType: 'String' ,
-      inputType: 'String',
+      inputType: 'hidden',
       relation: ''
       },
     { name: 'messages',
@@ -162,9 +166,13 @@ export class ChatFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+                this.files = [];
+          }
         }, 1000)
-        await this.router.navigate(['/chat']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -176,16 +184,14 @@ export class ChatFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-    fetchDeps() {
+  fetchDeps() {
          this.accountService.fetch(0,1000).subscribe(data => this.accounts.set(data.content));
          if(this.id){
-           this.fileManagerService.search("name",this.id).subscribe(
+           this.fileManagerService.search("objectId",this.id).subscribe(
                data => this.fileManagers.set(data)
            );
          }
-    }
-
+  }
     getEntities(name: string) {
         if (name === 'account') return this.accounts();
     return [];

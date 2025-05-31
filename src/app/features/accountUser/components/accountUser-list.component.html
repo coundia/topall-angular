@@ -104,6 +104,8 @@
    [editLink]="'/accountUser/' + selectedItem()?.id  + '/edit'"
   [viewLink]="'/accountUser/' + selectedItem()?.id  + '/view'"
   [addLink]="'/accountUser/new'"
+  [hasFiles] = "hasFiles"
+  [isFileManager]= false
 />
 
 <app-global-drawer-form
@@ -123,4 +125,6 @@
   [getEntities]="getEntities.bind(this)"
  [files]="files"
  (filesChange)="files = $event"
+ [hasFiles] = "hasFiles"
+  [isFileManager]= false
 />

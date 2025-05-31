@@ -9,6 +9,7 @@ import { AlertService } from '../../../shared/components/alert/alert.service';
 
 import { Account } from '../../account/models/account.model';
 import  { AccountService } from '../../account/services/account.service';
+
 import {FileManager} from "../../fileManager/models/fileManager.model";
 import {FileManagerService} from "../../fileManager/services/fileManager.service";
 import {FileViewerComponent} from "../../../shared/components/files/file-viewer.component";
@@ -16,7 +17,9 @@ import {FileViewerComponent} from "../../../shared/components/files/file-viewer.
 @Component({
   selector: 'app-chat-view',
   standalone: true,
-    imports: [CommonModule, RouterLink, EntityToolbarActionComponent, FileViewerComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+ FileViewerComponent
+],
   templateUrl: './chat-view.component.html',
 })
 export class ChatViewComponent {
@@ -28,6 +31,7 @@ export class ChatViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<Chat | null>(this.service.chats().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = true;
 
     private readonly  accountService = inject(AccountService);
     account  =   signal<Account | null>(null);
@@ -35,8 +39,7 @@ export class ChatViewComponent {
     fileManagers  =   signal<FileManager[]>([]);
     fileManagerService = inject(FileManagerService);
 
-
-    readonly fields: FieldDefinition[] = [
+  readonly fields: FieldDefinition[] = [
         { name: 'messages',
         displayName: 'Message', type: 'string',
         entityType: 'String',
@@ -66,7 +69,7 @@ export class ChatViewComponent {
 
   constructor() {
     effect(() => {
-        this.fetchDeps();
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -113,7 +116,7 @@ export class ChatViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`Chat "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de Chat "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/chat']);
         }, 600);
@@ -129,7 +132,7 @@ export class ChatViewComponent {
      return (item as any)[fieldName + 'Model'];
   }
 
-    fetchDeps() {
+   fetchDeps() {
       const  id = this.item()?.id ?? this.id ?? null;
          if(id){
             this.fileManagerService.search("objectId",id).subscribe(

@@ -16,9 +16,10 @@ import {EntityPickerComponent} from '../../../shared/picker/app-entity-picker';
   selector: 'app-category-form',
   standalone: true,
   imports: [CommonModule,
+   EntityPickerComponent,
+    EntityToolbarActionComponent,
    ReactiveFormsModule,
-    EntityPickerComponent,
-    EntityToolbarActionComponent
+ 
     ],
   templateUrl: './category-form.component.html',
 })
@@ -33,6 +34,8 @@ export class CategoryFormComponent implements OnInit {
   readonly isEdit = signal(!!this.id);
   readonly isLoading = signal(false);
 
+
+ hasFiles = false;
 
   readonly form = this.fb.group({
     id: [ ""  ],
@@ -114,6 +117,7 @@ export class CategoryFormComponent implements OnInit {
       }
     }
 
+    this.fetchDeps();
 
   }
 
@@ -138,9 +142,12 @@ export class CategoryFormComponent implements OnInit {
         this.isLoading.set(false);
         this.alert.show("Operation en cours...!", 'success');
         setTimeout(() => {
-          this.alert.show("Opération réussie avec succès!", 'success');
+           this.fetchDeps();
+            if(!this.isEdit()){
+                this.form.reset();
+          }
         }, 1000)
-        await this.router.navigate(['/category']);
+
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -152,8 +159,8 @@ export class CategoryFormComponent implements OnInit {
    onDelete() {
         //todo
       }
-
-
+  fetchDeps() {
+  }
     getEntities(name: string) {
     return [];
     }

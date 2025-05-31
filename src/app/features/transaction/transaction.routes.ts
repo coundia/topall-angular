@@ -25,5 +25,11 @@ export const transactionRoutes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/transaction-view.component').then(m => m.TransactionViewComponent),
+  },
+  {
+    path: 'transaction/dashboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/dashboard.component').then(m => m.DashboardComponent),
   }
 ];

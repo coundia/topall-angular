@@ -20,6 +20,7 @@ import {SortService} from '../../../shared/components/tri/sort.service';
 import {SHARED_IMPORTS} from '../../../shared/constantes/shared-imports';
 import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Parsing';
 
+
 @Component({
   selector: 'app-category-list',
   standalone: true,
@@ -44,22 +45,25 @@ import {getDefaultValue, toDatetimeLocalString} from '../../../shared/hooks/Pars
   templateUrl: './category-list.component.html',
 })
 export class CategoryListComponent implements OnInit {
-  readonly service = inject(CategoryService);
+  readonly categoryService = inject(CategoryService);
   readonly alert = inject(AlertService);
   readonly sortService = inject(SortService);
 
-  readonly list = this.service.categorys;
-  readonly totalPages = this.service.totalPages;
+  readonly list = this.categoryService.categorys;
+  readonly totalPages = this.categoryService.totalPages;
   readonly isLoading = signal(false);
   readonly page = signal(0);
   readonly size = signal(10);
   files: File[] = [];
+
+  hasFiles = false;
 
   searchField = 'name';
   searchTerm = '';
 
   @Output() searchFieldChange = new EventEmitter<string>();
   @Output() searchTermChange = new EventEmitter<string>();
+
 
 
   readonly selectedItem = signal<Category | null>(null);
@@ -157,7 +161,7 @@ export class CategoryListComponent implements OnInit {
 
   refresh(): void {
     this.isLoading.set(true);
-    this.service.fetch(this.page(), this.size()).subscribe({
+    this.categoryService.fetch(this.page(), this.size()).subscribe({
       next: () => this.isLoading.set(false),
       error: err => {
         this.alert.show('Erreur lors de la récupération des categorys.', 'error');
@@ -173,9 +177,9 @@ export class CategoryListComponent implements OnInit {
     const confirmed = window.confirm(`Supprimer "${item.id}" ?`);
     if (!confirmed) return;
 
-    this.service.delete(id).subscribe({
+    this.categoryService.delete(id).subscribe({
       next: () => {
-        this.alert.show(`Category "${item.id}" supprimé(e)`, 'success');
+        this.alert.show(`Suppression de "Category" "${item.id}" en cours...`, 'success');
         setTimeout(() => this.refresh(), 1500);
       },
       error: err => {
@@ -187,6 +191,9 @@ export class CategoryListComponent implements OnInit {
   showDetails(id: string): void {
     const item = this.list().find(e => e.id === id);
     if (!item) return;
+
+    this.fetchDeps(item);
+
     this.selectedItem.set(null);
 
      setTimeout(() => this.selectedItem.set(item), 0);
@@ -198,7 +205,7 @@ export class CategoryListComponent implements OnInit {
     this.searchTerm = value;
     if (!value) return this.refresh();
     this.isLoading.set(true);
-    this.service.search(field, value).subscribe({
+    this.categoryService.search(field, value).subscribe({
       next: items => {
         this.list.set(items);
         this.isLoading.set(false);
@@ -239,7 +246,7 @@ export class CategoryListComponent implements OnInit {
     if (this.editMode && this.itemId) {
 
 
-      this.service.update(this.itemId, data).subscribe({
+      this.categoryService.update(this.itemId, data).subscribe({
         next: () => {
           this.alert.show('Mis(e) à jour "Category" en cours.', 'success');
           this.closeDrawer();
@@ -252,7 +259,7 @@ export class CategoryListComponent implements OnInit {
     } else {
 
 
-      this.service.create(data).subscribe({
+      this.categoryService.create(data).subscribe({
         next: () => {
           this.alert.show('Création "Category" en cours.  ', 'success');
           this.closeDrawer();
@@ -268,9 +275,9 @@ export class CategoryListComponent implements OnInit {
   handleDelete(id: string) {
     const confirmed = window.confirm('Supprimer cet(te) category ?');
     if (!confirmed) return;
-    this.service.delete(id).subscribe({
+    this.categoryService.delete(id).subscribe({
       next: () => {
-        this.alert.show('Category supprimé(e)', 'success');
+        this.alert.show('Suppression de "Category" en cours... ', 'success');
         this.closeDrawer();
         this.refresh();
       },
@@ -303,7 +310,7 @@ export class CategoryListComponent implements OnInit {
 
   openDrawerForEdit(item: Category) {
     this.drawerVisible = false;
-    this.fetchDeps();
+    this.fetchDeps(item);
     setTimeout(() => {
       this.drawerVisible = true;
       this.formKey.update(k => k + 1);
@@ -339,13 +346,18 @@ export class CategoryListComponent implements OnInit {
     return this.fieldsToDisplay.find(f => f.name === this.searchField)?.type ?? 'text';
   }
 
+    fetchDeps(item?: Category): void {
 
-    fetchDeps() {
-        }
 
+        this.getFileManager(item);
+    }
 
     getEntities(name: string) {
     return [];
     }
+
+    getFileManager(item?: Category): void {
+
+      }
 
 }

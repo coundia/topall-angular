@@ -8,10 +8,13 @@ import { EntityToolbarActionComponent } from '../../../shared/components/view-to
 import { AlertService } from '../../../shared/components/alert/alert.service';
 
 
+
 @Component({
   selector: 'app-account-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, EntityToolbarActionComponent],
+  imports: [CommonModule, RouterLink, EntityToolbarActionComponent,
+
+],
   templateUrl: './account-view.component.html',
 })
 export class AccountViewComponent {
@@ -23,6 +26,8 @@ export class AccountViewComponent {
   readonly id = this.route.snapshot.paramMap.get('id');
   readonly item = signal<Account | null>(this.service.accounts().find(e => e.id === this.id) ?? null);
   readonly isLoading = signal(false);
+    hasFiles = false;
+
 
 
   readonly fields: FieldDefinition[] = [
@@ -60,6 +65,7 @@ export class AccountViewComponent {
 
   constructor() {
     effect(() => {
+    this.fetchDeps();
       if (!this.item()) {
         this.isLoading.set(true);
         this.service.getById?.(this.id!).subscribe?.({
@@ -90,7 +96,7 @@ export class AccountViewComponent {
     if (!confirmed) return;
     this.service.delete?.(id).subscribe?.({
       next: () => {
-        this.alert.show(`Account "${id}" supprimé(e)`, 'success');
+        this.alert.show(`suppression de Account "${id}" en cours... `, 'success');
         setTimeout(() => {
           this.router.navigate(['/account']);
         }, 600);
@@ -105,5 +111,8 @@ export class AccountViewComponent {
    getRelatedModel(item: any, fieldName: string) {
      return (item as any)[fieldName + 'Model'];
   }
+
+   fetchDeps() {
+    }
 
 }

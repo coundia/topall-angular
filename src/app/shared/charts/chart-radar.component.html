@@ -1,0 +1,12 @@
+<div class="bg-base-100 rounded-2xl shadow-lg relative group transition-all duration-300 w-full aspect-[4/3] flex items-center justify-center">
+
+  <canvas
+    baseChart
+    [data]="radarChartData"
+    [options]="options"
+    [type]="chartType"
+    (chartClick)="onChartClick($event)"
+    (chartHover)="onChartHover($event)"
+
+  ></canvas>
+</div>
