@@ -1,46 +1,49 @@
-# Angular 19 Starter  
+# Topall Angular Starter
 
-Projet Frontend Angular 19 moderne avec Tailwind CSS 4.1, DaisyUI 5.x, ngx-translate, Chart.js et support complet UI/UX standalone avec SRP.
+A modern Angular 19 starter using the standalone API with Tailwind CSS 4.1, DaisyUI 5.x, ngx-translate and Chart.js. The project provides a fully standalone UI/UX structure that follows the SRP approach.
 
-## 🔧 Stack Technique
+## Features
 
 - Angular 19 Standalone API
 - Tailwind CSS v4.1
-- DaisyUI v5.x (thème personnalisable via `data-theme`)
-- ngx-translate (multi-fichier dynamique)
+- DaisyUI v5.x (theme customizable via `data-theme`)
+- ngx-translate with dynamic multi-file loader
 - Chart.js & ng2-charts
 - Signal / Computed / SRP
 
-## 📦 Installation
+## Installation
+
+Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/coundia/angular-i18n-daisyui-starter
-cd angular-i18n-daisyui-starter
+git clone https://github.com/coundia/topall-angular.git
+cd topall-angular
 npm install
 ```
 
-## 🚀 Démarrage
+## Development server
 
 ```bash
 npm start
 ```
 
-Accessible via `http://localhost:4200`
+The application will be available at `http://localhost:4200`.
 
-## 🛠️ Commandes Utiles
+## Useful commands
 
-| Commande        | Description                        |
-|-----------------|------------------------------------|
-| `npm start`     | Lancer l'application               |
-| `npm run build` | Compiler pour la prod              |
-| `npm run test`  | Lancer les tests unitaires         |
-| `npm run watch` | Rebuild à chaque modification      |
+| Command          | Description                          |
+|------------------|--------------------------------------|
+| `npm start`      | Launch the application               |
+| `npm run build`  | Build for production                 |
+| `npm run test`   | Run unit tests                       |
+| `npm run watch`  | Rebuild on each modification         |
 
-## 🌍 Traduction
+## Translation
 
-Support multi-langue avec `@ngx-translate/core` + `MultiTranslateHttpLoader`.
+This starter uses `@ngx-translate/core` together with `MultiTranslateHttpLoader` to load multiple translation files.
 
-### Ajout de fichiers de traduction :
+Add your translation files as follows:
+
 ```ts
 export function httpLoaderFactory(http: HttpClient) {
   return new MultiTranslateHttpLoader(http, [
@@ -49,45 +52,43 @@ export function httpLoaderFactory(http: HttpClient) {
     'notification',
     'security',
     'errors',
-    // ajouter ici vos fichiers
+    // add your files here
   ]);
 }
 ```
 
-## 🎨 Thème & Design
+## Theme & Design
 
-Utilise `DaisyUI` avec thème dynamique :
+DaisyUI supports dynamic themes:
 
 ```html
 <html data-theme="light">
-<!-- ou -->
+<!-- or -->
 <html data-theme="dark">
-<!-- ou votre thème -->
+<!-- or your custom theme -->
 <html data-theme="tenant-theme">
 ```
 
-## 📊 Graphiques
+## Charts
 
-Intégration via `ng2-charts` et `chart.js` :
+Integration with `ng2-charts` and `Chart.js`:
 
 ```ts
 import { NgChartsModule } from 'ng2-charts';
 ```
 
-## 🧪 Tests
+## Tests
 
-Basé sur Karma + Jasmine :
+Configured with Karma and Jasmine:
 
 ```bash
 npm run test
 ```
 
-## 🧩 À venir
- 
-- Animations et accessibilité optimisées
+## Coming next
+
+- Animations and accessibility improvements
 
 ---
 
-Développé avec ❤️  
-# topall-angular
-# topall-angular
+Made with ❤️
