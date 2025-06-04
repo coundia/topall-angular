@@ -7,11 +7,11 @@ import { ResetPasswordComponent } from './shared/security/reset-password/reset-p
 import { authGuard } from './shared/security/guard/auth.guard';
 import { userProfileRoutes } from './user-profile/user.routes';
 import { categoryRoutes } from './features/category/category.routes';
-import {settingRoutes} from './features/Setting/setting.routes';
+import {settingRoutes} from './features/setting/setting.routes';
 import {accountRoutes} from './features/account/account.routes';
-import {accountUserRoutes} from './features/AccountUser/accountUser.routes';
-import {chatRoutes} from './features/Chat/chat.routes';
-import {transactionRoutes} from './features/Transaction/transaction.routes';
+import {accountUserRoutes} from './features/accountUser/accountUser.routes';
+import {chatRoutes} from './features/chat/chat.routes';
+import {transactionRoutes} from './features/transaction/transaction.routes';
 import {fileManagerRoutes} from './features/fileManager/fileManager.routes';
 
 export const routes: Routes = [
